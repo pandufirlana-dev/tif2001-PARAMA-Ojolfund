@@ -158,3 +158,20 @@ captures/
 *.keystore
 *.apk
 *.aab
+
+# ===== Android / Gradle (monorepo: mobile/) =====
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.externalNativeBuild/
+.cxx/
+captures/
+.DS_Store
+
+# Signing keys & Android binaries
+*.jks
+*.keystore
+*.apk
+*.aab

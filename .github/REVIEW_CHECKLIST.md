@@ -8,14 +8,14 @@ Dipakai reviewer saat membuka tab **Files changed**. Pilih **Approve** jika semu
 - [ ] File `*.env.example` hanya berisi placeholder, bukan nilai asli
 - [ ] Tidak ada folder `build/`, `.gradle/`, atau `.idea/` ikut ter-commit
 
-## Mobile (Kotlin / Jetpack Compose) — `mobile/`
+## Mobile (Kotlin / Jetpack Compose) [G `mobile/`
 - [ ] Arsitektur MVVM dipatuhi: validasi dan logika bisnis di ViewModel (StateFlow), bukan di Composable
 - [ ] State UI lengkap: error, loading, sukses, dan navigasi
 - [ ] Base URL / konfigurasi API tidak ditulis hardcoded; lewat BuildConfig atau konfigurasi build (bukan variabel `VITE_*`)
 - [ ] Token JWT (jika ada) disimpan via DataStore / EncryptedSharedPreferences, bukan SharedPreferences biasa
 - [ ] Lolos `./gradlew lintDebug` dan format ktlint
 
-## Backend (Node.js) — `server/`
+## Backend (Node.js) [G `server/`
 - [ ] Password di-hash dengan bcrypt (salt rounds 10), tidak disimpan plain text
 - [ ] `JWT_SECRET` dan `DATABASE_URL` dibaca dari environment, bukan ditulis di kode
 - [ ] Query database memakai parameter (bukan string concatenation)

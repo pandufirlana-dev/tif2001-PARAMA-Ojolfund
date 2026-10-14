@@ -1,30 +1,8 @@
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(100) NOT NULL,
   email VARCHAR(150) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  role VARCHAR(20) NOT NULL DEFAULT 'staff',
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE products (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(150) NOT NULL,
-  sku VARCHAR(50) UNIQUE NOT NULL,
-  category VARCHAR(100),
-  quantity INTEGER NOT NULL DEFAULT 0,
-  unit VARCHAR(20) DEFAULT 'pcs',
-  price NUMERIC(12,2) NOT NULL DEFAULT 0,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE stock_transactions (
-  id SERIAL PRIMARY KEY,
-  product_id INTEGER NOT NULL REFERENCES products(id),
-  user_id INTEGER NOT NULL REFERENCES users(id),
-  type VARCHAR(10) NOT NULL CHECK (type IN ('in', 'out')),
-  quantity INTEGER NOT NULL,
-  note TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(20) DEFAULT 'user',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

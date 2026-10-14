@@ -1,168 +1,69 @@
+# API Specification: Modul Autentikasi (Ojolfund)
 
-Token didapatkan dari response endpoint Login, dan wajib disertakan pada setiap request ke endpoint yang dilindungi.
+Base URL: `http://localhost:5000/api/v1`
 
----
+## POST /auth/register
 
-## 1. Register
-
-Mendaftarkan pengguna baru.
-
-- **Method**: `POST`
-- **Endpoint**: `/auth/register`
-- **Headers**: `Content-Type: application/json`
-- **Auth**: Tidak diperlukan
-
-### Request Body
+Request body:
 
 ```json
-{
-  "name": "Juuuh",
-  "email": "juuuh@example.com",
-  "password": "password123"
-}
+{ "name": "string", "email": "string", "password": "string (min 8 karakter)" }
 ```
 
-### Response — Success (201 Created)
+Response 201:
 
 ```json
 {
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "id": 1,
-    "name": "Juuuh",
-    "email": "juuuh@example.com",
-    "role": "staff",
-    "created_at": "2026-09-25T10:00:00Z"
+  "message": "Registrasi berhasil",
+  "user": {
+    "id": "uuid",
+    "name": "...",
+    "email": "...",
+    "role": "user",
+    "created_at": "..."
   }
 }
 ```
 
-### Response — Error (400 Bad Request)
+Response 400: `{ "message": "Format email tidak valid" }` (atau field kosong / password < 8)
+Response 409: `{ "message": "Email sudah terdaftar" }`
+
+## POST /auth/login
+
+Request body:
+
+```json
+{ "email": "string", "password": "string" }
+```
+
+Response 200:
 
 ```json
 {
-  "success": false,
-  "message": "Email already registered"
+  "message": "Login berhasil",
+  "token": "jwt (berlaku 24 jam)",
+  "user": { "id": "...", "name": "...", "email": "...", "role": "user" }
 }
 ```
 
-### Response — Error (422 Unprocessable Entity)
+Response 400: `{ "message": "Email dan password wajib diisi" }`
+Response 401: `{ "message": "Email atau kata sandi salah" }`
 
-```json
-{
-  "success": false,
-  "message": "Validation error",
-  "errors": {
-    "email": "Email is not valid",
-    "password": "Password must be at least 8 characters"
-  }
-}
-```
+## GET /auth/me
 
----
-
-## 2. Login
-
-Mengautentikasi pengguna dan mengembalikan token JWT.
-
-- **Method**: `POST`
-- **Endpoint**: `/auth/login`
-- **Headers**: `Content-Type: application/json`
-- **Auth**: Tidak diperlukan
-
-### Request Body
-
-```json
-{
-  "email": "juuuh@example.com",
-  "password": "password123"
-}
-```
-
-### Response — Success (200 OK)
-
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": 1,
-      "name": "Juuuh",
-      "email": "juuuh@example.com",
-      "role": "staff"
-    }
-  }
-}
-```
-
-### Response — Error (401 Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Invalid email or password"
-}
-```
-
----
-
-## 3. Get Products (contoh endpoint terlindungi, referensi Sprint berikutnya)
-
-- **Method**: `GET`
-- **Endpoint**: `/products`
-- **Auth**: Wajib (Bearer Token)
-- **Query Parameters**:
-  - `page` (optional, default: 1) — halaman pagination
-  - `limit` (optional, default: 10) — jumlah data per halaman
-  - `search` (optional) — filter berdasarkan nama produk
-
-### Response — Success (200 OK)
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "name": "Kabel USB Type-C",
-      "sku": "SKU-001",
-      "category": "Elektronik",
-      "quantity": 50,
-      "unit": "pcs",
-      "price": 25000
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 10,
-    "total": 1
-  }
-}
-```
-
-### Response — Error (401 Unauthorized)
-
-```json
-{
-  "success": false,
-  "message": "Token is missing or invalid"
-}
-```
-
----
+Header: `Authorization: Bearer <token>`
+Response 200: `{ "message": "Token valid", "user": { "id": "...", "role": "..." } }`
+Response 401: `{ "message": "Token tidak ditemukan" }` atau `"Token tidak valid atau kedaluwarsa"`
 
 ## HTTP Status Code Reference
 
-| Code | Meaning |
-|------|---------|
-| 200 | OK — request berhasil |
-| 201 | Created — data baru berhasil dibuat |
-| 400 | Bad Request — permintaan tidak valid |
-| 401 | Unauthorized — token tidak ada / tidak valid |
-| 403 | Forbidden — tidak punya akses (role tidak sesuai) |
-| 404 | Not Found — data tidak ditemukan |
-| 422 | Unprocessable Entity — validasi input gagal |
-| 500 | Internal Server Error — kesalahan di sisi server |
+| Code | Meaning                                           |
+| ---- | ------------------------------------------------- |
+| 200  | OK — request berhasil                             |
+| 201  | Created — data baru berhasil dibuat               |
+| 400  | Bad Request — permintaan tidak valid              |
+| 401  | Unauthorized — token tidak ada / tidak valid      |
+| 403  | Forbidden — tidak punya akses (role tidak sesuai) |
+| 404  | Not Found — data tidak ditemukan                  |
+| 422  | Unprocessable Entity — validasi input gagal       |
+| 500  | Internal Server Error — kesalahan di sisi server  |

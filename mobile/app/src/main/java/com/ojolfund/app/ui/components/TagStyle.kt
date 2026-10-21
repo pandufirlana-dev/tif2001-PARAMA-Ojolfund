@@ -30,17 +30,66 @@ data class TagStyle(
     val fg: Color,
     val icon: ImageVector?,
     val iconBg: Color,
-    val iconTint: Color,
+    val iconTint: Color
 )
 
 fun tagStyle(kind: TagKind): TagStyle = when (kind) {
-    TagKind.GORIDE -> TagStyle("GoRide", OjolColors.GoRideBg, OjolColors.GoRideText, Icons.Filled.TwoWheeler, OjolColors.GoRideBg, OjolColors.GoRideText)
-    TagKind.GRAB -> TagStyle("GrabBike", OjolColors.GrabBg, OjolColors.GrabText, Icons.Filled.Moped, OjolColors.GrabBg, OjolColors.GoRideText)
-    TagKind.MAXIM -> TagStyle("Maxim", OjolColors.MaximBg, OjolColors.MaximText, Icons.Filled.Moped, OjolColors.MaximBg, OjolColors.MaximText)
-    TagKind.BBM -> TagStyle("BBM", OjolColors.ExpenseBg, OjolColors.ExpenseText, Icons.Filled.LocalGasStation, OjolColors.ExpenseBg, OjolColors.Expense)
-    TagKind.PARKIR -> TagStyle("Parkir", OjolColors.ExpenseBg, OjolColors.ExpenseText, null, OjolColors.ExpenseBg, OjolColors.Expense)
-    TagKind.MAKAN -> TagStyle("Makan", OjolColors.WarningBg, OjolColors.MaximText, Icons.Filled.Restaurant, OjolColors.ExpenseBg, OjolColors.Expense)
-    TagKind.LAINNYA -> TagStyle("Lainnya", OjolColors.GrayBox, OjolColors.TextVariant, Icons.Filled.MoreHoriz, OjolColors.GrayBox, OjolColors.TextVariant)
+    TagKind.GORIDE -> TagStyle(
+        "GoRide",
+        OjolColors.GoRideBg,
+        OjolColors.GoRideText,
+        Icons.Filled.TwoWheeler,
+        OjolColors.GoRideBg,
+        OjolColors.GoRideText
+    )
+    TagKind.GRAB -> TagStyle(
+        "GrabBike",
+        OjolColors.GrabBg,
+        OjolColors.GrabText,
+        Icons.Filled.Moped,
+        OjolColors.GrabBg,
+        OjolColors.GoRideText
+    )
+    TagKind.MAXIM -> TagStyle(
+        "Maxim",
+        OjolColors.MaximBg,
+        OjolColors.MaximText,
+        Icons.Filled.Moped,
+        OjolColors.MaximBg,
+        OjolColors.MaximText
+    )
+    TagKind.BBM -> TagStyle(
+        "BBM",
+        OjolColors.ExpenseBg,
+        OjolColors.ExpenseText,
+        Icons.Filled.LocalGasStation,
+        OjolColors.ExpenseBg,
+        OjolColors.Expense
+    )
+    TagKind.PARKIR -> TagStyle(
+        "Parkir",
+        OjolColors.ExpenseBg,
+        OjolColors.ExpenseText,
+        null,
+        OjolColors.ExpenseBg,
+        OjolColors.Expense
+    )
+    TagKind.MAKAN -> TagStyle(
+        "Makan",
+        OjolColors.WarningBg,
+        OjolColors.MaximText,
+        Icons.Filled.Restaurant,
+        OjolColors.ExpenseBg,
+        OjolColors.Expense
+    )
+    TagKind.LAINNYA -> TagStyle(
+        "Lainnya",
+        OjolColors.GrayBox,
+        OjolColors.TextVariant,
+        Icons.Filled.MoreHoriz,
+        OjolColors.GrayBox,
+        OjolColors.TextVariant
+    )
 }
 
 /** Kotak ikon kategori transaksi; "Parkir" memakai huruf P seperti di desain. */
@@ -55,7 +104,7 @@ fun TagIcon(kind: TagKind, modifier: Modifier = Modifier, size: Dp = 40.dp) {
                 .size(size)
                 .clip(RoundedCornerShape(10.dp))
                 .background(style.iconBg),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Alignment.Center
         ) {
             Text("P", color = style.iconTint, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
         }

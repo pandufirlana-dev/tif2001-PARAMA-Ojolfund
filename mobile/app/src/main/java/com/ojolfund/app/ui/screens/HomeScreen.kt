@@ -22,15 +22,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LocalGasStation
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Percent
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.ShoppingBag
@@ -51,9 +51,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ojolfund.app.data.Transaction
 import com.ojolfund.app.data.formatRupiah
@@ -75,7 +75,7 @@ fun HomeScreen(
     onAddExpense: () -> Unit,
     onStartShift: () -> Unit,
     onSeeAll: () -> Unit,
-    onProfile: () -> Unit,
+    onProfile: () -> Unit
 ) {
     val context = LocalContext.current
     val transactions by ledgerVm.transactions.collectAsState()
@@ -88,7 +88,7 @@ fun HomeScreen(
         OjolTopBar(
             subtitle = "Beranda",
             onBell = { context.toast("Belum ada notifikasi baru") },
-            onAvatar = onProfile,
+            onAvatar = onProfile
         )
 
         Column(
@@ -96,7 +96,7 @@ fun HomeScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             // Sapaan
             Row(
@@ -136,7 +136,7 @@ fun HomeScreen(
                         OjolColors.Border,
                         RoundedCornerShape(20.dp)
                     )
-                    .padding(20.dp),
+                    .padding(20.dp)
             ) {
                 Row(
                     Modifier.fillMaxWidth(),
@@ -247,7 +247,7 @@ fun HomeScreen(
                         context.toast(
                             "Tambah order (demo): GoRide / Grab / Maxim"
                         )
-                    },
+                    }
                 )
 
                 QuickAction(
@@ -264,7 +264,7 @@ fun HomeScreen(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    onClick = onAddExpense,
+                    onClick = onAddExpense
                 )
             }
 
@@ -284,7 +284,7 @@ fun HomeScreen(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    onClick = onStartShift,
+                    onClick = onStartShift
                 )
 
                 QuickAction(
@@ -302,7 +302,7 @@ fun HomeScreen(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    onClick = onAddExpense,
+                    onClick = onAddExpense
                 )
             }
 
@@ -381,7 +381,7 @@ fun HomeScreen(
                 Row(
                     modifier = Modifier.clickable(onClick = onSeeAll),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
                         "Lihat Semua",
@@ -451,7 +451,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
                     .background(OjolColors.GrayBox)
-                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                    .padding(horizontal = 14.dp, vertical = 6.dp)
             ) {
                 UpcomingRow(
                     Icons.Filled.Analytics,
@@ -476,18 +476,12 @@ fun HomeScreen(
 }
 
 @Composable
-private fun MiniStat(
-    label: String,
-    value: String,
-    valueColor: Color,
-    bg: Color,
-    modifier: Modifier = Modifier
-) {
+private fun MiniStat(label: String, value: String, valueColor: Color, bg: Color, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(bg)
-            .padding(horizontal = 10.dp, vertical = 10.dp),
+            .padding(horizontal = 10.dp, vertical = 10.dp)
     ) {
         Text(
             label,
@@ -521,7 +515,7 @@ private fun QuickAction(
     subtitle: String,
     trailing: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     OjolCard(
         modifier = modifier,
@@ -571,7 +565,7 @@ private fun StatCard(
     valueColor: Color,
     modifier: Modifier = Modifier,
     suffix: String = "",
-    iconTint: Color = OjolColors.TextVariant,
+    iconTint: Color = OjolColors.TextVariant
 ) {
     OjolCard(
         modifier = modifier,
@@ -630,10 +624,7 @@ private fun StatCard(
 }
 
 @Composable
-private fun ActivityRow(
-    tx: Transaction,
-    onClick: () -> Unit
-) {
+private fun ActivityRow(tx: Transaction, onClick: () -> Unit) {
     val style = tagStyle(tx.tagKind)
 
     Row(
@@ -641,7 +632,7 @@ private fun ActivityRow(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TagIcon(tx.tagKind, size = 44.dp)
         Spacer(Modifier.width(12.dp))
@@ -659,7 +650,7 @@ private fun ActivityRow(
                     color = OjolColors.TextPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false),
+                    modifier = Modifier.weight(1f, fill = false)
                 )
                 Pill(
                     style.label.uppercase(),
@@ -701,7 +692,7 @@ private fun ActivityRow(
                 } else {
                     OjolColors.ExpenseText
                 },
-                maxLines = 1,
+                maxLines = 1
             )
             Text(
                 tx.method,
@@ -713,11 +704,7 @@ private fun ActivityRow(
 }
 
 @Composable
-private fun UpcomingRow(
-    icon: ImageVector,
-    title: String,
-    subtitle: String
-) {
+private fun UpcomingRow(icon: ImageVector, title: String, subtitle: String) {
     val context = LocalContext.current
 
     Row(
@@ -727,7 +714,7 @@ private fun UpcomingRow(
                 context.toast("$title — segera hadir")
             }
             .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             icon,

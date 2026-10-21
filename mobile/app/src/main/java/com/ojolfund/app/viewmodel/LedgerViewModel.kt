@@ -5,13 +5,13 @@ import com.ojolfund.app.data.ExpenseCategory
 import com.ojolfund.app.data.SampleData
 import com.ojolfund.app.data.TagKind
 import com.ojolfund.app.data.Transaction
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 /** Buku kas sederhana (in-memory) yang dibagi antar layar. */
 class LedgerViewModel : ViewModel() {
@@ -36,7 +36,7 @@ class LedgerViewModel : ViewModel() {
             subtitle = "Operasional Motor",
             amount = -amount,
             method = "Tunai",
-            group = SampleData.GROUP_TODAY,
+            group = SampleData.GROUP_TODAY
         )
         _transactions.update { listOf(tx) + it }
     }

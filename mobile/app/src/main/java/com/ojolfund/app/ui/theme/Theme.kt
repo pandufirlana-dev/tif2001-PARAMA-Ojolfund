@@ -41,8 +41,10 @@ object OjolColors {
 
 /** Skala tipografi (Inter di desain; di sini memakai font sistem agar tanpa aset tambahan). */
 object OjolText {
-    val Display = TextStyle(fontSize = 32.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.9).sp)
-    val HeadlineLg = TextStyle(fontSize = 24.sp, lineHeight = 32.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
+    val Display =
+        TextStyle(fontSize = 32.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.9).sp)
+    val HeadlineLg =
+        TextStyle(fontSize = 24.sp, lineHeight = 32.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp)
     val HeadlineMd = TextStyle(fontSize = 20.sp, lineHeight = 28.sp, fontWeight = FontWeight.SemiBold)
     val TitleLg = TextStyle(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight.SemiBold)
     val TitleMd = TextStyle(fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.SemiBold)
@@ -67,7 +69,7 @@ private val OjolColorScheme = lightColorScheme(
     surfaceVariant = OjolColors.GrayBox,
     onSurfaceVariant = OjolColors.TextVariant,
     outline = OjolColors.Border,
-    error = OjolColors.ShiftRed,
+    error = OjolColors.ShiftRed
 )
 
 @Composable

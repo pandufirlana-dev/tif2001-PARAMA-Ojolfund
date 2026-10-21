@@ -387,10 +387,6 @@ private fun WhyItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text:
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun LoginScreenPreview() {
-    LoginScreen(
-        vm = AuthViewModel(),
-        onBack = {},
-        onOtpSent = {},
-        onGoogle = {},
-    )
+    // Preview dinonaktifkan sementara karena LoginScreen
+    // membutuhkan AuthViewModel.
 }

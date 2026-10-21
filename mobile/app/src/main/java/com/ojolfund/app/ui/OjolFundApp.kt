@@ -1,6 +1,6 @@
 package com.ojolfund.app.ui
 
-import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -68,7 +68,7 @@ fun OjolFundApp() {
                 .background(OjolColors.Canvas),
         ) {
             composable(Routes.WELCOME) {
-                val activity = LocalContext.current as? Activity
+                val activity = LocalActivity.current
                 WelcomeScreen(
                     onStart = { nav.navigate(Routes.LOGIN) },
                     onLogin = { nav.navigate(Routes.LOGIN) },

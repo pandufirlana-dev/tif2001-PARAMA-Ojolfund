@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -66,7 +67,7 @@ fun OjolCard(
     padding: Dp = 16.dp,
     borderColor: Color = OjolColors.Border,
     onClick: (() -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit
 ) {
     val clickMod = if (onClick != null) Modifier.clip(shape).clickable(onClick = onClick) else Modifier
     Surface(
@@ -74,7 +75,7 @@ fun OjolCard(
         shape = shape,
         color = color,
         border = BorderStroke(1.dp, borderColor),
-        shadowElevation = 1.dp,
+        shadowElevation = 1.dp
     ) {
         Column(modifier = clickMod.padding(padding), content = content)
     }
@@ -91,7 +92,7 @@ fun Pill(
     icon: ImageVector? = null,
     dot: Boolean = false,
     textSize: TextUnit = 11.sp,
-    weight: FontWeight = FontWeight.SemiBold,
+    weight: FontWeight = FontWeight.SemiBold
 ) {
     Row(
         modifier = modifier
@@ -99,7 +100,7 @@ fun Pill(
             .background(bg)
             .padding(horizontal = 10.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         if (dot) Box(Modifier.size(6.dp).clip(CircleShape).background(fg))
         if (icon != null) Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(13.dp))
@@ -120,14 +121,14 @@ fun IconBox(
     tint: Color = OjolColors.Primary,
     size: Dp = 40.dp,
     radius: Dp = 10.dp,
-    iconSize: Dp = 22.dp,
+    iconSize: Dp = 22.dp
 ) {
     Box(
         modifier = modifier
             .size(size)
             .clip(RoundedCornerShape(radius))
             .background(bg),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
     ) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(iconSize))
     }
@@ -145,9 +146,10 @@ fun PrimaryButton(
     color: Color = OjolColors.Primary,
     enabled: Boolean = true,
     height: Dp = 52.dp,
+    loading: Boolean = false
 ) {
     Button(
-        onClick = onClick,
+        onClick = { if (!loading) onClick() },
         enabled = enabled,
         modifier = modifier.fillMaxWidth().height(height),
         shape = RoundedCornerShape(14.dp),
@@ -155,18 +157,22 @@ fun PrimaryButton(
             containerColor = color,
             contentColor = Color.White,
             disabledContainerColor = color.copy(alpha = 0.5f),
-            disabledContentColor = Color.White,
+            disabledContentColor = Color.White
         ),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
     ) {
-        if (leadingIcon != null) {
-            Icon(leadingIcon, contentDescription = null, modifier = Modifier.size(20.dp))
-            Spacer(Modifier.width(8.dp))
-        }
-        Text(text, style = OjolText.LabelLg.copy(fontSize = 16.sp), color = Color.White)
-        if (trailingIcon != null) {
-            Spacer(Modifier.width(8.dp))
-            Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp))
+        if (loading) {
+            CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(22.dp))
+        } else {
+            if (leadingIcon != null) {
+                Icon(leadingIcon, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(8.dp))
+            }
+            Text(text, style = OjolText.LabelLg.copy(fontSize = 16.sp), color = Color.White)
+            if (trailingIcon != null) {
+                Spacer(Modifier.width(8.dp))
+                Icon(trailingIcon, contentDescription = null, modifier = Modifier.size(20.dp))
+            }
         }
     }
 }
@@ -179,14 +185,14 @@ fun SoftButton(
     leadingIcon: ImageVector? = null,
     bg: Color = OjolColors.GrayBox,
     fg: Color = OjolColors.Primary,
-    height: Dp = 48.dp,
+    height: Dp = 48.dp
 ) {
     Button(
         onClick = onClick,
         modifier = modifier.height(height),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = bg, contentColor = fg),
-        elevation = null,
+        elevation = null
     ) {
         if (leadingIcon != null) {
             Icon(leadingIcon, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -204,12 +210,12 @@ fun SectionHeader(
     modifier: Modifier = Modifier,
     action: String? = null,
     onAction: (() -> Unit)? = null,
-    actionColor: Color = OjolColors.Primary,
+    actionColor: Color = OjolColors.Primary
 ) {
     Row(
         modifier = modifier.fillMaxWidth().padding(top = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(title, style = OjolText.TitleMd.copy(fontWeight = FontWeight.Bold), color = OjolColors.TextPrimary)
         if (action != null) {
@@ -217,7 +223,7 @@ fun SectionHeader(
                 action,
                 style = OjolText.LabelMd,
                 color = actionColor,
-                modifier = if (onAction != null) Modifier.clickable(onClick = onAction) else Modifier,
+                modifier = if (onAction != null) Modifier.clickable(onClick = onAction) else Modifier
             )
         }
     }
@@ -231,21 +237,21 @@ fun ProgressLine(
     color: Color,
     modifier: Modifier = Modifier,
     track: Color = OjolColors.GrayBox2,
-    height: Dp = 8.dp,
+    height: Dp = 8.dp
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(height)
             .clip(CircleShape)
-            .background(track),
+            .background(track)
     ) {
         Box(
             Modifier
                 .fillMaxWidth(progress.coerceIn(0f, 1f))
                 .height(height)
                 .clip(CircleShape)
-                .background(color),
+                .background(color)
         )
     }
 }
@@ -259,13 +265,13 @@ fun OjolLogo(modifier: Modifier = Modifier, size: Dp = 36.dp) {
             .size(size)
             .clip(RoundedCornerShape(size / 3.2f))
             .background(OjolColors.Primary),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
     ) {
         Icon(
             Icons.Filled.AccountBalanceWallet,
             contentDescription = "OjoLFund",
             tint = Color.White,
-            modifier = Modifier.size(size * 0.55f),
+            modifier = Modifier.size(size * 0.55f)
         )
     }
 }
@@ -278,9 +284,16 @@ fun AvatarCircle(modifier: Modifier = Modifier, size: Dp = 40.dp, onClick: () ->
             .clip(CircleShape)
             .background(OjolColors.Primary)
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
     ) {
-        Icon(Icons.Filled.Person, contentDescription = "Profil", tint = Color.White, modifier = Modifier.size(size * 0.55f))
+        Icon(
+            Icons.Filled.Person,
+            contentDescription = "Profil",
+            tint = Color.White,
+            modifier = Modifier.size(
+                size * 0.55f
+            )
+        )
     }
 }
 
@@ -288,24 +301,26 @@ fun AvatarCircle(modifier: Modifier = Modifier, size: Dp = 40.dp, onClick: () ->
 
 /** Top bar ala Beranda / Transaksi / Profil: logo + "OjolFund [Tersinkron]" + subjudul + lonceng + avatar. */
 @Composable
-fun OjolTopBar(
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    onBell: () -> Unit = {},
-    onAvatar: () -> Unit = {},
-) {
+fun OjolTopBar(subtitle: String, modifier: Modifier = Modifier, onBell: () -> Unit = {}, onAvatar: () -> Unit = {}) {
     Surface(color = Color.White, shadowElevation = 2.dp, modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             OjolLogo(size = 36.dp)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Text("OjolFund", style = OjolText.TitleMd.copy(fontWeight = FontWeight.Bold), color = OjolColors.TextPrimary)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        "OjolFund",
+                        style = OjolText.TitleMd.copy(fontWeight = FontWeight.Bold),
+                        color = OjolColors.TextPrimary
+                    )
                     SyncPill()
                 }
                 Text(subtitle, style = OjolText.LabelSm, color = OjolColors.TextSecondary)
@@ -314,7 +329,7 @@ fun OjolTopBar(
                 Icons.Filled.Notifications,
                 contentDescription = "Notifikasi",
                 tint = OjolColors.TextPrimary,
-                modifier = Modifier.size(24.dp).clickable(onClick = onBell),
+                modifier = Modifier.size(24.dp).clickable(onClick = onBell)
             )
             Spacer(Modifier.width(14.dp))
             AvatarCircle(size = 38.dp, onClick = onAvatar)
@@ -324,22 +339,20 @@ fun OjolTopBar(
 
 /** Header sederhana ala Shift / Kendaraan: judul besar + "Tersinkron" + lonceng + avatar. */
 @Composable
-fun PageHeader(
-    title: String,
-    modifier: Modifier = Modifier,
-    onBell: () -> Unit = {},
-    onAvatar: () -> Unit = {},
-) {
+fun PageHeader(title: String, modifier: Modifier = Modifier, onBell: () -> Unit = {}, onAvatar: () -> Unit = {}) {
     Surface(color = Color.White, shadowElevation = 2.dp, modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f)) {
                 Text(title, style = OjolText.HeadlineLg, color = OjolColors.TextPrimary)
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
                     Box(Modifier.size(7.dp).clip(CircleShape).background(OjolColors.Primary))
                     Text("Tersinkron", style = OjolText.LabelMd, color = OjolColors.Primary)
                 }
@@ -348,7 +361,7 @@ fun PageHeader(
                 Icons.Filled.Notifications,
                 contentDescription = "Notifikasi",
                 tint = OjolColors.TextPrimary,
-                modifier = Modifier.size(24.dp).clickable(onClick = onBell),
+                modifier = Modifier.size(24.dp).clickable(onClick = onBell)
             )
             Spacer(Modifier.width(14.dp))
             AvatarCircle(size = 40.dp, onClick = onAvatar)
@@ -364,17 +377,20 @@ fun AuthTopBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier)
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Kembali",
                 tint = OjolColors.TextPrimary,
-                modifier = Modifier.size(26.dp).clickable(onClick = onBack),
+                modifier = Modifier.size(26.dp).clickable(onClick = onBack)
             )
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
                     Box(Modifier.size(7.dp).clip(CircleShape).background(OjolColors.Primary))
                     Text("OJOLFUND", style = OjolText.LabelSm.copy(letterSpacing = 1.2.sp), color = OjolColors.Primary)
                 }
@@ -394,7 +410,7 @@ private val navItems = listOf(
     NavItem(Routes.TRANSACTIONS, "Transaksi", Icons.Filled.AccountBalanceWallet),
     NavItem(Routes.SHIFT, "Shift", Icons.Filled.Speed),
     NavItem(Routes.VEHICLE, "Kendaraan", Icons.Filled.TwoWheeler),
-    NavItem(Routes.PROFILE, "Profil", Icons.Filled.ManageAccounts),
+    NavItem(Routes.PROFILE, "Profil", Icons.Filled.ManageAccounts)
 )
 
 @Composable
@@ -413,7 +429,7 @@ fun OjolBottomBar(currentRoute: String?, onNavigate: (String) -> Unit) {
                             item.label,
                             fontSize = 11.sp,
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            maxLines = 1,
+                            maxLines = 1
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
@@ -421,8 +437,8 @@ fun OjolBottomBar(currentRoute: String?, onNavigate: (String) -> Unit) {
                         selectedTextColor = OjolColors.Primary,
                         unselectedIconColor = OjolColors.TextSecondary,
                         unselectedTextColor = OjolColors.TextSecondary,
-                        indicatorColor = Color.Transparent,
-                    ),
+                        indicatorColor = Color.Transparent
+                    )
                 )
             }
         }

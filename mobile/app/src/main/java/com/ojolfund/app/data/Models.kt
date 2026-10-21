@@ -16,7 +16,7 @@ data class Transaction(
     val subtitle: String,
     val amount: Long,
     val method: String,
-    val group: String,
+    val group: String
 ) {
     val isIncome: Boolean get() = amount >= 0
 }
@@ -27,7 +27,7 @@ enum class ExpenseCategory(val label: String) {
     MAKAN("Makan & Es"),
     DATA("Paket Data"),
     SERVIS("Servis & Ban"),
-    LAINNYA("Lainnya"),
+    LAINNYA("Lainnya")
 }
 
 object SampleData {
@@ -35,12 +35,72 @@ object SampleData {
     const val GROUP_YESTERDAY = "Kemarin — Rabu, 23 Okt 2024"
 
     val transactions: List<Transaction> = listOf(
-        Transaction(1, "GoRide #1084", TagKind.GORIDE, "11:42", "Tebet ke Senayan", "Kotor: Rp22.500 (Komisi 20%)", 18_000, "Dompet", GROUP_TODAY),
-        Transaction(2, "Pengeluaran BBM", TagKind.BBM, "10:15", "Pertalite 2.5L SPBU 34", "Operasional Motor", -25_000, "Tunai", GROUP_TODAY),
-        Transaction(3, "GrabBike #2291", TagKind.GRAB, "09:30", "Antar ke Kuningan", "Kotor: Rp19.000 (Komisi 20%)", 15_200, "OVO Driver", GROUP_TODAY),
-        Transaction(4, "Parkir", TagKind.PARKIR, "08:45", "Parkir Stasiun Cawang", "Tunggu Penumpang", -3_000, "Koin Tunai", GROUP_TODAY),
-        Transaction(5, "Maxim #8831", TagKind.MAXIM, "17:10", "Pasar Minggu ke Kalibata", "Kotor: Rp16.000 (Komisi 15%)", 13_600, "Saldo Maxim", GROUP_YESTERDAY),
-        Transaction(6, "Makan Siang", TagKind.MAKAN, "13:00", "Warung Nasi Padang Sederhana", "Konsumsi Harian", -18_000, "QRIS Bank", GROUP_YESTERDAY),
+        Transaction(
+            id = 1,
+            tag = "GoRide #1084",
+            tagKind = TagKind.GORIDE,
+            time = "11:42",
+            title = "Tebet ke Senayan",
+            subtitle = "Kotor: Rp22.500 (Komisi 20%)",
+            amount = 18_000,
+            method = "Dompet",
+            group = GROUP_TODAY
+        ),
+        Transaction(
+            id = 2,
+            tag = "Pengeluaran BBM",
+            tagKind = TagKind.BBM,
+            time = "10:15",
+            title = "Pertalite 2.5L SPBU 34",
+            subtitle = "Operasional Motor",
+            amount = -25_000,
+            method = "Tunai",
+            group = GROUP_TODAY
+        ),
+        Transaction(
+            id = 3,
+            tag = "GrabBike #2291",
+            tagKind = TagKind.GRAB,
+            time = "09:30",
+            title = "Antar ke Kuningan",
+            subtitle = "Kotor: Rp19.000 (Komisi 20%)",
+            amount = 15_200,
+            method = "OVO Driver",
+            group = GROUP_TODAY
+        ),
+        Transaction(
+            id = 4,
+            tag = "Parkir",
+            tagKind = TagKind.PARKIR,
+            time = "08:45",
+            title = "Parkir Stasiun Cawang",
+            subtitle = "Tunggu Penumpang",
+            amount = -3_000,
+            method = "Koin Tunai",
+            group = GROUP_TODAY
+        ),
+        Transaction(
+            id = 5,
+            tag = "Maxim #8831",
+            tagKind = TagKind.MAXIM,
+            time = "17:10",
+            title = "Pasar Minggu ke Kalibata",
+            subtitle = "Kotor: Rp16.000 (Komisi 15%)",
+            amount = 13_600,
+            method = "Saldo Maxim",
+            group = GROUP_YESTERDAY
+        ),
+        Transaction(
+            id = 6,
+            tag = "Makan Siang",
+            tagKind = TagKind.MAKAN,
+            time = "13:00",
+            title = "Warung Nasi Padang Sederhana",
+            subtitle = "Konsumsi Harian",
+            amount = -18_000,
+            method = "QRIS Bank",
+            group = GROUP_YESTERDAY
+        )
     )
 }
 

@@ -38,8 +38,8 @@ import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SupportAgent
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.AlertDialog
@@ -97,7 +97,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
         OjolTopBar(
             subtitle = "Profil — Ojolfund",
             onBell = { context.toast("Belum ada notifikasi baru") },
-            onAvatar = { context.toast("Ini profil kamu") },
+            onAvatar = { context.toast("Ini profil kamu") }
         )
 
         Column(
@@ -105,7 +105,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             // Kartu profil
             OjolCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), padding = 16.dp) {
@@ -113,9 +113,14 @@ fun ProfileScreen(onLogout: () -> Unit) {
                     Box {
                         Box(
                             Modifier.size(68.dp).clip(RoundedCornerShape(14.dp)).background(OjolColors.Primary),
-                            contentAlignment = Alignment.Center,
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Filled.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(40.dp))
+                            Icon(
+                                Icons.Filled.Person,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(40.dp)
+                            )
                         }
                         Row(
                             modifier = Modifier
@@ -124,17 +129,36 @@ fun ProfileScreen(onLogout: () -> Unit) {
                                 .background(Color(0xFFFFC83D))
                                 .padding(horizontal = 8.dp, vertical = 2.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
-                            Icon(Icons.Filled.Star, contentDescription = null, tint = Color(0xFF5C4300), modifier = Modifier.size(11.dp))
+                            Icon(
+                                Icons.Filled.Star,
+                                contentDescription = null,
+                                tint = Color(0xFF5C4300),
+                                modifier = Modifier.size(11.dp)
+                            )
                             Text("4.98", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color(0xFF5C4300))
                         }
                     }
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text("Budi Santoso", style = OjolText.TitleLg.copy(fontWeight = FontWeight.Bold), color = OjolColors.TextPrimary)
-                            Pill("Driver Aktif", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, dot = true, textSize = 10.sp)
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Budi Santoso",
+                                style = OjolText.TitleLg.copy(fontWeight = FontWeight.Bold),
+                                color = OjolColors.TextPrimary
+                            )
+                            Pill(
+                                "Driver Aktif",
+                                bg = OjolColors.Aqua,
+                                fg = OjolColors.PrimaryDeep,
+                                dot = true,
+                                textSize = 10.sp
+                            )
                         }
                         Text("+62 812-8765-4321", style = OjolText.BodyMd, color = OjolColors.TextVariant)
                         Row(
@@ -144,10 +168,19 @@ fun ProfileScreen(onLogout: () -> Unit) {
                                 .background(OjolColors.GrayBox2)
                                 .padding(horizontal = 8.dp, vertical = 3.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Icon(Icons.Filled.Badge, contentDescription = null, tint = OjolColors.TextVariant, modifier = Modifier.size(14.dp))
-                            Text("ID: #OJ-88219", style = OjolText.LabelSm.copy(fontSize = 11.sp), color = OjolColors.TextVariant)
+                            Icon(
+                                Icons.Filled.Badge,
+                                contentDescription = null,
+                                tint = OjolColors.TextVariant,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Text(
+                                "ID: #OJ-88219",
+                                style = OjolText.LabelSm.copy(fontSize = 11.sp),
+                                color = OjolColors.TextVariant
+                            )
                         }
                     }
                 }
@@ -157,11 +190,19 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
                         .background(OjolColors.GrayBox)
-                        .padding(12.dp),
+                        .padding(12.dp)
                 ) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("INTEGRASI AKUN OJOL", style = OjolText.LabelSm.copy(fontSize = 11.sp), color = OjolColors.TextPrimary)
-                        Text("3 Platform Terhubung", style = OjolText.LabelSm.copy(fontSize = 11.sp), color = OjolColors.Primary)
+                        Text(
+                            "INTEGRASI AKUN OJOL",
+                            style = OjolText.LabelSm.copy(fontSize = 11.sp),
+                            color = OjolColors.TextPrimary
+                        )
+                        Text(
+                            "3 Platform Terhubung",
+                            style = OjolText.LabelSm.copy(fontSize = 11.sp),
+                            color = OjolColors.Primary
+                        )
                     }
                     Spacer(Modifier.height(10.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -178,7 +219,9 @@ fun ProfileScreen(onLogout: () -> Unit) {
                     icon = Icons.Filled.Sync,
                     title = "Pusat Sinkronisasi Offline",
                     subtitle = "Sistem Ledger Kebal Blank Spot",
-                    badge = { Pill("Online", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, dot = true, textSize = 11.sp) },
+                    badge = {
+                        Pill("Online", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, dot = true, textSize = 11.sp)
+                    }
                 )
                 Spacer(Modifier.height(12.dp))
                 Row(
@@ -187,13 +230,18 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .clip(RoundedCornerShape(14.dp))
                         .background(OjolColors.AquaSoft)
                         .padding(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(Icons.Filled.Bolt, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Filled.Bolt,
+                        contentDescription = null,
+                        tint = OjolColors.PrimaryDeep,
+                        modifier = Modifier.size(20.dp)
+                    )
                     Text(
                         "Tetap aman catat trip & beli bensin walau sinyal hilang di terowongan/hujan badai. Transaksi disimpan lokal di HP dan diunggah otomatis saat sinyal pulih.",
                         style = OjolText.BodyMd.copy(fontSize = 13.sp),
-                        color = OjolColors.PrimaryDeep,
+                        color = OjolColors.PrimaryDeep
                     )
                 }
                 Spacer(Modifier.height(10.dp))
@@ -204,7 +252,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         footIcon = Icons.Filled.CheckCircle,
                         foot = "Bersih & Terkirim",
                         footColor = OjolColors.Primary,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f)
                     )
                     SyncInfoBox(
                         title = "Aman di Cloud",
@@ -212,7 +260,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         footIcon = Icons.Filled.Schedule,
                         foot = "Terakhir 12:45 WIB",
                         footColor = OjolColors.TextVariant,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 Spacer(Modifier.height(12.dp))
@@ -220,7 +268,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
                     text = if (syncing) "Menyinkronkan…" else "Sinkronkan Sekarang",
                     onClick = { if (!syncing) syncing = true },
                     leadingIcon = Icons.Filled.Sync,
-                    enabled = !syncing,
+                    enabled = !syncing
                 )
                 Spacer(Modifier.height(10.dp))
                 Row(
@@ -229,13 +277,23 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .clip(RoundedCornerShape(14.dp))
                         .background(OjolColors.GrayBox)
                         .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Filled.Wifi, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(24.dp))
+                    Icon(
+                        Icons.Filled.Wifi,
+                        contentDescription = null,
+                        tint = OjolColors.PrimaryDeep,
+                        modifier = Modifier.size(24.dp)
+                    )
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
                         Text("Mode Hemat Kuota Seluler", style = OjolText.LabelLg, color = OjolColors.TextPrimary)
-                        Text("Hanya sinkron foto struk saat terhu...", style = OjolText.BodySm, color = OjolColors.TextVariant, maxLines = 1)
+                        Text(
+                            "Hanya sinkron foto struk saat terhu...",
+                            style = OjolText.BodySm,
+                            color = OjolColors.TextVariant,
+                            maxLines = 1
+                        )
                     }
                     Switch(
                         checked = saveData,
@@ -245,8 +303,8 @@ fun ProfileScreen(onLogout: () -> Unit) {
                             checkedThumbColor = Color.White,
                             uncheckedTrackColor = OjolColors.GrayBox2,
                             uncheckedThumbColor = Color.White,
-                            uncheckedBorderColor = OjolColors.Border,
-                        ),
+                            uncheckedBorderColor = OjolColors.Border
+                        )
                     )
                 }
                 Spacer(Modifier.height(10.dp))
@@ -256,13 +314,18 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .clip(RoundedCornerShape(14.dp))
                         .background(OjolColors.GrayBox2)
                         .padding(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(Icons.Filled.Lightbulb, contentDescription = null, tint = OjolColors.Warning, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Filled.Lightbulb,
+                        contentDescription = null,
+                        tint = OjolColors.Warning,
+                        modifier = Modifier.size(20.dp)
+                    )
                     Text(
                         "Simulasi otomatis: Saat sinyal terputus, banner kuning \"Mode Offline\" akan muncul tanpa mengganggu tarikan trip.",
                         style = OjolText.BodySm,
-                        color = OjolColors.TextVariant,
+                        color = OjolColors.TextVariant
                     )
                 }
             }
@@ -273,7 +336,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
                     icon = Icons.Filled.Shield,
                     title = "Pencadangan & Keamanan",
                     subtitle = "Cadangan Cloud Pribadi Driver",
-                    badge = { Pill("Tersambung", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, textSize = 11.sp) },
+                    badge = { Pill("Tersambung", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, textSize = 11.sp) }
                 )
                 Spacer(Modifier.height(12.dp))
                 Column(
@@ -282,9 +345,14 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .clip(RoundedCornerShape(14.dp))
                         .background(OjolColors.GrayBox)
                         .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    InfoRow(Icons.Filled.Cloud, "Penyimpanan Tujuan", "Google Drive\n(budi.ojol@gmail.com)", OjolColors.TextPrimary)
+                    InfoRow(
+                        Icons.Filled.Cloud,
+                        "Penyimpanan Tujuan",
+                        "Google Drive\n(budi.ojol@gmail.com)",
+                        OjolColors.TextPrimary
+                    )
                     InfoRow(Icons.Filled.Schedule, "Jadwal Otomatis", "Tiap Hari (23:59 WIB)", OjolColors.TextPrimary)
                     InfoRow(Icons.Filled.Fingerprint, "Kunci Biometrik", "Sidik Jari Aktif", OjolColors.Primary)
                 }
@@ -306,9 +374,14 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .background(OjolColors.GrayBox2)
                         .clickable { context.toast("Rekap buku kas diunduh (demo)") },
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Filled.Download, contentDescription = null, tint = OjolColors.TextPrimary, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.Filled.Download,
+                        contentDescription = null,
+                        tint = OjolColors.TextPrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
                     Spacer(Modifier.width(8.dp))
                     Text("Unduh Rekap Buku Kas (Excel / PDF)", style = OjolText.LabelLg, color = OjolColors.TextPrimary)
                 }
@@ -320,12 +393,21 @@ fun ProfileScreen(onLogout: () -> Unit) {
                     icon = Icons.Filled.Tune,
                     title = "Pengaturan Komisi & Target",
                     subtitle = "Hitungan Bersih Otomatis",
-                    badge = null,
+                    badge = null
                 )
                 Spacer(Modifier.height(8.dp))
-                CommissionRow("Potongan Gojek (GoRide)", "Komisi standar aplikator", gojek, OjolColors.GoRideText) { gojek = nextPercent(gojek) }
-                CommissionRow("Potongan Grab (GrabBike)", "Bagi hasil bagi mitra", grab, OjolColors.GrabText) { grab = nextPercent(grab) }
-                CommissionRow("Potongan Maxim Driver", "Komisi order aktif", maxim, OjolColors.Warning) { maxim = nextPercent(maxim) }
+                CommissionRow("Potongan Gojek (GoRide)", "Komisi standar aplikator", gojek, OjolColors.GoRideText) {
+                    gojek =
+                        nextPercent(gojek)
+                }
+                CommissionRow("Potongan Grab (GrabBike)", "Bagi hasil bagi mitra", grab, OjolColors.GrabText) {
+                    grab =
+                        nextPercent(grab)
+                }
+                CommissionRow("Potongan Maxim Driver", "Komisi order aktif", maxim, OjolColors.Warning) {
+                    maxim =
+                        nextPercent(maxim)
+                }
                 Spacer(Modifier.height(8.dp))
                 Column(
                     modifier = Modifier
@@ -333,18 +415,42 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .clip(RoundedCornerShape(14.dp))
                         .background(OjolColors.GrayBox)
                         .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(Icons.Filled.Flag, contentDescription = null, tint = OjolColors.Warning, modifier = Modifier.size(20.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.Flag,
+                                contentDescription = null,
+                                tint = OjolColors.Warning,
+                                modifier = Modifier.size(20.dp)
+                            )
                             Text("Target Cuan Bersih", style = OjolText.LabelLg, color = OjolColors.TextPrimary)
                         }
                         Text("Rp 150.000 / hari", style = OjolText.LabelLg, color = OjolColors.Primary)
                     }
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(Icons.Filled.Notifications, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(20.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.Notifications,
+                                contentDescription = null,
+                                tint = OjolColors.PrimaryDeep,
+                                modifier = Modifier.size(20.dp)
+                            )
                             Text("Pengingat Servis & Oli", style = OjolText.LabelLg, color = OjolColors.TextPrimary)
                         }
                         Pill("Tiap 2.000 KM", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, textSize = 11.sp)
@@ -359,15 +465,28 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .fillMaxWidth()
                         .clickable { context.toast("Panduan Driver & FAQ (demo)") }
                         .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Filled.MenuBook, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(24.dp))
+                    Icon(
+                        Icons.Filled.MenuBook,
+                        contentDescription = null,
+                        tint = OjolColors.PrimaryDeep,
+                        modifier = Modifier.size(24.dp)
+                    )
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         Text("Panduan Driver & FAQ", style = OjolText.LabelLg, color = OjolColors.TextPrimary)
-                        Text("Tips maksimalkan buku kas saat on-bid", style = OjolText.BodySm, color = OjolColors.TextVariant)
+                        Text(
+                            "Tips maksimalkan buku kas saat on-bid",
+                            style = OjolText.BodySm,
+                            color = OjolColors.TextVariant
+                        )
                     }
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = OjolColors.TextVariant)
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = OjolColors.TextVariant
+                    )
                 }
                 Spacer(Modifier.height(10.dp))
                 Row(
@@ -377,25 +496,43 @@ fun ProfileScreen(onLogout: () -> Unit) {
                         .background(Color(0xFFE3F6EC))
                         .clickable { context.toast("Membuka WhatsApp dukungan (demo)") }
                         .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Filled.SupportAgent, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(24.dp))
+                    Icon(
+                        Icons.Filled.SupportAgent,
+                        contentDescription = null,
+                        tint = OjolColors.PrimaryDeep,
+                        modifier = Modifier.size(24.dp)
+                    )
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         Text("Dukungan WhatsApp OjoLFund", style = OjolText.LabelLg, color = OjolColors.PrimaryDeep)
-                        Text("Respon cepat tim lapangan (08:00 - 22:00)", style = OjolText.BodySm, color = OjolColors.PrimaryDeep)
+                        Text(
+                            "Respon cepat tim lapangan (08:00 - 22:00)",
+                            style = OjolText.BodySm,
+                            color = OjolColors.PrimaryDeep
+                        )
                     }
-                    Icon(Icons.Filled.Chat, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(22.dp))
+                    Icon(
+                        Icons.Filled.Chat,
+                        contentDescription = null,
+                        tint = OjolColors.PrimaryDeep,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
             }
 
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("OjoLFund v1.2.0 (Build 2024.10)", style = OjolText.LabelSm.copy(fontSize = 11.sp), color = OjolColors.TextPrimary)
+                Text(
+                    "OjoLFund v1.2.0 (Build 2024.10)",
+                    style = OjolText.LabelSm.copy(fontSize = 11.sp),
+                    color = OjolColors.TextPrimary
+                )
                 Text(
                     "100% Khusus Pejuang Aspal & Pengemudi Tangguh",
                     style = OjolText.BodySm,
                     color = OjolColors.TextVariant,
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Center
                 )
             }
 
@@ -407,9 +544,14 @@ fun ProfileScreen(onLogout: () -> Unit) {
                     .background(OjolColors.GrayBox2)
                     .clickable { showLogout = true },
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = OjolColors.ShiftRed, modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.AutoMirrored.Filled.Logout,
+                    contentDescription = null,
+                    tint = OjolColors.ShiftRed,
+                    modifier = Modifier.size(20.dp)
+                )
                 Spacer(Modifier.width(10.dp))
                 Text("Keluar dari Akun Driver", style = OjolText.LabelLg, color = OjolColors.ShiftRed)
             }
@@ -421,7 +563,9 @@ fun ProfileScreen(onLogout: () -> Unit) {
         AlertDialog(
             onDismissRequest = { showLogout = false },
             title = { Text("Keluar dari akun?", fontWeight = FontWeight.Bold) },
-            text = { Text("Data yang belum tersinkron tetap tersimpan di HP dan akan diunggah setelah kamu masuk lagi.") },
+            text = {
+                Text("Data yang belum tersinkron tetap tersimpan di HP dan akan diunggah setelah kamu masuk lagi.")
+            },
             confirmButton = {
                 TextButton(onClick = {
                     showLogout = false
@@ -430,7 +574,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
             },
             dismissButton = {
                 TextButton(onClick = { showLogout = false }) { Text("Batal", color = OjolColors.TextVariant) }
-            },
+            }
         )
     }
 }
@@ -446,21 +590,27 @@ private fun PlatformChip(name: String, dot: Color, modifier: Modifier = Modifier
             .background(Color.White)
             .padding(horizontal = 8.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Box(Modifier.size(7.dp).clip(CircleShape).background(dot))
-        Text(name, style = OjolText.LabelMd, color = OjolColors.TextPrimary, maxLines = 1, modifier = Modifier.weight(1f))
-        Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = OjolColors.Primary, modifier = Modifier.size(14.dp))
+        Text(
+            name,
+            style = OjolText.LabelMd,
+            color = OjolColors.TextPrimary,
+            maxLines = 1,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            Icons.Filled.CheckCircle,
+            contentDescription = null,
+            tint = OjolColors.Primary,
+            modifier = Modifier.size(14.dp)
+        )
     }
 }
 
 @Composable
-private fun SectionTitleRow(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    badge: (@Composable () -> Unit)?,
-) {
+private fun SectionTitleRow(icon: ImageVector, title: String, subtitle: String, badge: (@Composable () -> Unit)?) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         IconBox(icon, bg = OjolColors.Aqua, tint = OjolColors.PrimaryDeep, size = 42.dp, radius = 12.dp)
         Spacer(Modifier.width(10.dp))
@@ -479,16 +629,21 @@ private fun SyncInfoBox(
     footIcon: ImageVector,
     foot: String,
     footColor: Color,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
             .background(OjolColors.GrayBox)
-            .padding(12.dp),
+            .padding(12.dp)
     ) {
         Text(title, style = OjolText.LabelSm.copy(fontSize = 11.sp), color = OjolColors.TextVariant)
-        Text(value, style = OjolText.TitleMd.copy(fontWeight = FontWeight.Bold), color = OjolColors.TextPrimary, maxLines = 1)
+        Text(
+            value,
+            style = OjolText.TitleMd.copy(fontWeight = FontWeight.Bold),
+            color = OjolColors.TextPrimary,
+            maxLines = 1
+        )
         Spacer(Modifier.height(4.dp))
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Icon(footIcon, contentDescription = null, tint = footColor, modifier = Modifier.size(13.dp))
@@ -517,7 +672,7 @@ private fun OutlineAction(text: String, icon: ImageVector, modifier: Modifier = 
             .border(1.dp, OjolColors.Border, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(icon, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
@@ -531,7 +686,7 @@ private fun CommissionRow(title: String, subtitle: String, percent: Int, dot: Co
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(dot))
         Spacer(Modifier.width(10.dp))
@@ -548,7 +703,7 @@ private fun CommissionRow(title: String, subtitle: String, percent: Int, dot: Co
                 .background(Color.White)
                 .border(1.dp, OjolColors.Border, RoundedCornerShape(10.dp))
                 .clickable(onClick = onClick)
-                .padding(horizontal = 14.dp, vertical = 8.dp),
+                .padding(horizontal = 14.dp, vertical = 8.dp)
         )
     }
 }

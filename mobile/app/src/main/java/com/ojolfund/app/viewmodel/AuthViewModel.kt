@@ -1,103 +1,160 @@
 package com.ojolfund.app.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.ojolfund.app.OjolFundApplication
+import com.ojolfund.app.data.repository.AuthRepository
+import com.ojolfund.app.data.repository.AuthResult
+import com.ojolfund.app.validation.AuthValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-enum class OtpMethod { WHATSAPP, SMS }
+/** Status proses autentikasi; [LoggedIn] dan [Registered] adalah sinyal sekali pakai untuk navigasi. */
+sealed class AuthStatus {
+    data object Idle : AuthStatus()
+
+    data object Loading : AuthStatus()
+
+    data object LoggedIn : AuthStatus()
+
+    data object Registered : AuthStatus()
+
+    data class Error(val message: String) : AuthStatus()
+}
 
 data class AuthUiState(
-    val phone: String = "81287654321", // digit saja, tanpa +62 / 0 di depan
-    val phoneError: String? = null,
-    val method: OtpMethod = OtpMethod.WHATSAPP,
-    val otp: String = "",
-    val otpError: String? = null,
-    val secondsLeft: Int = 43,
-    val isLoading: Boolean = false,
-)
+    val name: String = "",
+    val email: String = "",
+    val password: String = "",
+    val confirmPassword: String = "",
+    val nameError: String? = null,
+    val emailError: String? = null,
+    val passwordError: String? = null,
+    val confirmError: String? = null,
+    val status: AuthStatus = AuthStatus.Idle,
+    val notice: String? = null
+) {
+    val isLoading: Boolean get() = status is AuthStatus.Loading
+    val errorMessage: String? get() = (status as? AuthStatus.Error)?.message
+}
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(AuthUiState())
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
 
-    // ---------- Nomor HP ----------
-    fun onPhoneAppend(digit: Char) {
-        _state.update {
-            if (it.phone.length >= 12 || !digit.isDigit()) it
-            else it.copy(phone = it.phone + digit, phoneError = null)
-        }
+    fun onNameChange(value: String) = _state.update {
+        it.copy(name = value, nameError = null, status = it.clearedStatus())
     }
 
-    fun onPhoneChange(raw: String) {
-        val digits = raw.filter { it.isDigit() }.removePrefix("0").take(12)
-        _state.update { it.copy(phone = digits, phoneError = null) }
+    fun onEmailChange(value: String) = _state.update {
+        it.copy(email = value, emailError = null, status = it.clearedStatus())
     }
 
-    fun onPhoneBackspace() {
-        _state.update { it.copy(phone = it.phone.dropLast(1), phoneError = null) }
+    fun onPasswordChange(value: String) = _state.update {
+        it.copy(password = value, passwordError = null, status = it.clearedStatus())
     }
 
-    fun setMethod(method: OtpMethod) {
-        _state.update { it.copy(method = method) }
+    fun onConfirmPasswordChange(value: String) = _state.update {
+        it.copy(confirmPassword = value, confirmError = null, status = it.clearedStatus())
     }
 
-    fun validatePhone(): String? = when {
-        _state.value.phone.length < 9 -> "Nomor handphone minimal 9 digit"
-        !_state.value.phone.startsWith("8") -> "Nomor harus diawali angka 8 (contoh: 812...)"
-        else -> null
-    }
+    fun login() {
+        val current = _state.value
+        if (current.isLoading) return
 
-    /** Validasi nomor, simulasi kirim OTP, lalu panggil [onSuccess]. */
-    fun sendOtp(onSuccess: () -> Unit) {
-        val error = validatePhone()
-        if (error != null) {
-            _state.update { it.copy(phoneError = error) }
+        val emailError = AuthValidator.validateEmail(current.email)
+        val passwordError = AuthValidator.validateLoginPassword(current.password)
+        if (emailError != null || passwordError != null) {
+            _state.update { it.copy(emailError = emailError, passwordError = passwordError, notice = null) }
             return
         }
+
+        _state.update { it.copy(status = AuthStatus.Loading, notice = null) }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, otp = "", otpError = null, secondsLeft = 43) }
-            delay(600)
-            _state.update { it.copy(isLoading = false) }
-            onSuccess()
+            when (val result = repository.login(current.email, current.password)) {
+                is AuthResult.Success -> _state.update { it.copy(password = "", status = AuthStatus.LoggedIn) }
+                is AuthResult.Failure -> _state.update { it.copy(status = AuthStatus.Error(result.message)) }
+            }
         }
     }
 
-    // ---------- OTP ----------
-    fun onOtpDigit(digit: Char) {
-        _state.update {
-            if (it.otp.length >= 6) it else it.copy(otp = it.otp + digit, otpError = null)
-        }
-    }
+    fun register() {
+        val current = _state.value
+        if (current.isLoading) return
 
-    fun onOtpBackspace() {
-        _state.update { it.copy(otp = it.otp.dropLast(1), otpError = null) }
-    }
-
-    fun tick() {
-        _state.update { if (it.secondsLeft > 0) it.copy(secondsLeft = it.secondsLeft - 1) else it }
-    }
-
-    fun resend() {
-        _state.update { it.copy(secondsLeft = 60, otp = "", otpError = null) }
-    }
-
-    /** Untuk demo: OTP valid jika 6 digit. */
-    fun verifyOtp(onSuccess: () -> Unit) {
-        if (_state.value.otp.length < 6) {
-            _state.update { it.copy(otpError = "Kode OTP harus 6 digit") }
+        val nameError = AuthValidator.validateName(current.name)
+        val emailError = AuthValidator.validateEmail(current.email)
+        val passwordError = AuthValidator.validateNewPassword(current.password)
+        val confirmError = AuthValidator.validateConfirmPassword(current.password, current.confirmPassword)
+        if (listOf(nameError, emailError, passwordError, confirmError).any { it != null }) {
+            _state.update {
+                it.copy(
+                    nameError = nameError,
+                    emailError = emailError,
+                    passwordError = passwordError,
+                    confirmError = confirmError,
+                    notice = null
+                )
+            }
             return
         }
+
+        _state.update { it.copy(status = AuthStatus.Loading, notice = null) }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            delay(600)
-            _state.update { it.copy(isLoading = false) }
-            onSuccess()
+            val result = repository.register(current.name, current.email, current.password)
+            when (result) {
+                is AuthResult.Success -> _state.update {
+                    // Email dipertahankan agar layar Masuk langsung terisi.
+                    AuthUiState(
+                        email = current.email.trim(),
+                        status = AuthStatus.Registered,
+                        notice = "Akun berhasil dibuat. Silakan masuk."
+                    )
+                }
+                is AuthResult.Failure -> _state.update {
+                    // 409 = email sudah terdaftar: tampilkan sebagai galat pada field email.
+                    if (result.code == HTTP_CONFLICT) {
+                        it.copy(status = AuthStatus.Idle, emailError = result.message)
+                    } else {
+                        it.copy(status = AuthStatus.Error(result.message))
+                    }
+                }
+            }
+        }
+    }
+
+    /** Menghapus token sesi lalu mengosongkan form. */
+    fun logout() {
+        viewModelScope.launch { repository.logout() }
+        _state.value = AuthUiState()
+    }
+
+    /** Mengosongkan form dan galat (dipanggil saat berpindah antar layar autentikasi). */
+    fun resetForm() {
+        _state.value = AuthUiState()
+    }
+
+    /** Dipanggil UI setelah sinyal navigasi ([AuthStatus.LoggedIn]/[AuthStatus.Registered]) ditangani. */
+    fun consumeStatus() = _state.update { it.copy(status = AuthStatus.Idle) }
+
+    private fun AuthUiState.clearedStatus(): AuthStatus = if (status is AuthStatus.Error) AuthStatus.Idle else status
+
+    companion object {
+        private const val HTTP_CONFLICT = 409
+
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val app = this[APPLICATION_KEY] as OjolFundApplication
+                AuthViewModel(app.container.authRepository)
+            }
         }
     }
 }

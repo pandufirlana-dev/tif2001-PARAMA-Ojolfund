@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,16 +51,12 @@ import com.ojolfund.app.ui.components.PrimaryButton
 import com.ojolfund.app.ui.components.toast
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
-import com.ojolfund.app.viewmodel.AuthViewModel
+import com.ojolfund.app.viewmodel.OtpAuthViewModel
 import com.ojolfund.app.viewmodel.OtpMethod
 import kotlinx.coroutines.delay
 
 @Composable
-fun OtpScreen(
-    vm: AuthViewModel,
-    onBack: () -> Unit,
-    onVerified: () -> Unit,
-) {
+fun OtpScreen(vm: OtpAuthViewModel, onBack: () -> Unit, onVerified: () -> Unit) {
     val state by vm.state.collectAsState()
     val context = LocalContext.current
 
@@ -85,7 +80,7 @@ fun OtpScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Pill(
                 "VERIFIKASI KEAMANAN",
@@ -93,20 +88,26 @@ fun OtpScreen(
                 fg = OjolColors.PrimaryDeep,
                 icon = Icons.Filled.Shield,
                 textSize = 13.sp,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = 4.dp)
             )
 
-            Text("Masukkan Kode OTP", style = OjolText.HeadlineLg.copy(fontSize = 30.sp), color = OjolColors.TextPrimary)
+            Text(
+                "Masukkan Kode OTP",
+                style = OjolText.HeadlineLg.copy(fontSize = 30.sp),
+                color = OjolColors.TextPrimary
+            )
 
             Text(
                 buildAnnotatedString {
                     append("Kode verifikasi 6 digit telah dikirimkan via ")
-                    withStyle(SpanStyle(color = OjolColors.PrimaryDeep, fontWeight = FontWeight.Bold)) { append(methodName) }
+                    withStyle(SpanStyle(color = OjolColors.PrimaryDeep, fontWeight = FontWeight.Bold)) {
+                        append(methodName)
+                    }
                     append(" ke nomor")
                 },
                 style = OjolText.BodyLg,
                 color = OjolColors.TextVariant,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Center
             )
 
             // Chip nomor
@@ -114,24 +115,29 @@ fun OtpScreen(
                 Row(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Box(
                         Modifier.size(38.dp).clip(CircleShape).background(OjolColors.GrayBox2),
-                        contentAlignment = Alignment.Center,
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Filled.Chat, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(20.dp))
+                        Icon(
+                            Icons.Filled.Chat,
+                            contentDescription = null,
+                            tint = OjolColors.PrimaryDeep,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                     Text(
                         "+62 " + formatPhone(state.phone).replace(' ', '-'),
                         style = OjolText.TitleMd.copy(fontWeight = FontWeight.Bold),
-                        color = OjolColors.TextPrimary,
+                        color = OjolColors.TextPrimary
                     )
                     Text(
                         "Ubah",
                         style = OjolText.LabelLg.copy(textDecoration = TextDecoration.Underline),
                         color = OjolColors.PrimaryDeep,
-                        modifier = Modifier.clickable(onClick = onBack),
+                        modifier = Modifier.clickable(onClick = onBack)
                     )
                 }
             }
@@ -149,11 +155,19 @@ fun OtpScreen(
                             .height(64.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(if (char != null || active) Color.White else OjolColors.GrayBox),
-                        contentAlignment = Alignment.Center,
+                        contentAlignment = Alignment.Center
                     ) {
                         when {
-                            char != null -> Text(char.toString(), style = OjolText.HeadlineLg.copy(fontSize = 28.sp), color = OjolColors.PrimaryDeep)
-                            active -> Text("|", style = OjolText.HeadlineLg.copy(fontSize = 28.sp), color = OjolColors.Primary)
+                            char != null -> Text(
+                                char.toString(),
+                                style = OjolText.HeadlineLg.copy(fontSize = 28.sp),
+                                color = OjolColors.PrimaryDeep
+                            )
+                            active -> Text(
+                                "|",
+                                style = OjolText.HeadlineLg.copy(fontSize = 28.sp),
+                                color = OjolColors.Primary
+                            )
                         }
                     }
                 }
@@ -164,14 +178,21 @@ fun OtpScreen(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Icon(Icons.Filled.Schedule, contentDescription = null, tint = OjolColors.TextVariant, modifier = Modifier.size(18.dp))
+                Icon(
+                    Icons.Filled.Schedule,
+                    contentDescription = null,
+                    tint = OjolColors.TextVariant,
+                    modifier = Modifier.size(18.dp)
+                )
                 Text(
                     buildAnnotatedString {
                         append("Kirim ulang kode dalam ")
-                        withStyle(SpanStyle(color = OjolColors.PrimaryDeep, fontWeight = FontWeight.Bold)) { append(timer) }
+                        withStyle(SpanStyle(color = OjolColors.PrimaryDeep, fontWeight = FontWeight.Bold)) {
+                            append(timer)
+                        }
                     },
                     style = OjolText.BodyMd,
-                    color = OjolColors.TextVariant,
+                    color = OjolColors.TextVariant
                 )
             }
 
@@ -188,7 +209,7 @@ fun OtpScreen(
                         } else {
                             context.toast("Tunggu hitung mundur selesai")
                         }
-                    },
+                    }
                 )
                 Box(Modifier.size(5.dp).clip(CircleShape).background(OjolColors.TextSecondary))
                 Text(
@@ -199,7 +220,7 @@ fun OtpScreen(
                         vm.setMethod(OtpMethod.SMS)
                         vm.resend()
                         context.toast("Kode OTP dikirim via SMS")
-                    },
+                    }
                 )
             }
 
@@ -210,24 +231,33 @@ fun OtpScreen(
                     .clip(RoundedCornerShape(16.dp))
                     .background(OjolColors.GrayBox)
                     .padding(14.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Box(
                     Modifier.size(34.dp).clip(CircleShape).background(OjolColors.GrayBox2),
-                    contentAlignment = Alignment.Center,
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Filled.Shield, contentDescription = null, tint = OjolColors.PrimaryDeep, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.Filled.Shield,
+                        contentDescription = null,
+                        tint = OjolColors.PrimaryDeep,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
                 Text(
                     buildAnnotatedString {
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = OjolColors.TextPrimary)) { append("Jaga Keamanan Akun: ") }
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = OjolColors.TextPrimary)) {
+                            append("Jaga Keamanan Akun: ")
+                        }
                         append("Jangan pernah bagikan kode OTP ini ke siapapun, termasuk yang mengatasnamakan ")
-                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = OjolColors.PrimaryDeep)) { append("OjoLFund") }
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = OjolColors.PrimaryDeep)) {
+                            append("OjoLFund")
+                        }
                         append(".")
                     },
                     style = OjolText.BodyMd,
                     color = OjolColors.TextVariant,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f)
                 )
             }
 
@@ -241,7 +271,7 @@ fun OtpScreen(
                     onClick = { vm.verifyOtp(onVerified) },
                     trailingIcon = Icons.AutoMirrored.Filled.ArrowForward,
                     color = OjolColors.PrimaryDark,
-                    height = 56.dp,
+                    height = 56.dp
                 )
             }
 
@@ -252,7 +282,7 @@ fun OtpScreen(
                     .clip(RoundedCornerShape(20.dp))
                     .background(OjolColors.GrayBox)
                     .padding(10.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 listOf(listOf('1', '2', '3'), listOf('4', '5', '6'), listOf('7', '8', '9')).forEach { row ->
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -264,14 +294,26 @@ fun OtpScreen(
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    KeyButton(Modifier.weight(1f), bg = Color.Transparent, onClick = { context.toast("Biometrik belum tersedia (demo)") }) {
-                        Icon(Icons.Filled.Fingerprint, contentDescription = "Biometrik", tint = OjolColors.TextSecondary, modifier = Modifier.size(28.dp))
+                    KeyButton(Modifier.weight(1f), bg = Color.Transparent, onClick = {
+                        context.toast("Biometrik belum tersedia (demo)")
+                    }) {
+                        Icon(
+                            Icons.Filled.Fingerprint,
+                            contentDescription = "Biometrik",
+                            tint = OjolColors.TextSecondary,
+                            modifier = Modifier.size(28.dp)
+                        )
                     }
                     KeyButton(Modifier.weight(1f), onClick = { vm.onOtpDigit('0') }) {
                         Text("0", style = OjolText.HeadlineLg, color = OjolColors.TextPrimary)
                     }
                     KeyButton(Modifier.weight(1f), bg = OjolColors.GrayBox2, onClick = { vm.onOtpBackspace() }) {
-                        Icon(Icons.AutoMirrored.Filled.Backspace, contentDescription = "Hapus", tint = OjolColors.TextPrimary, modifier = Modifier.size(26.dp))
+                        Icon(
+                            Icons.AutoMirrored.Filled.Backspace,
+                            contentDescription = "Hapus",
+                            tint = OjolColors.TextPrimary,
+                            modifier = Modifier.size(26.dp)
+                        )
                     }
                 }
             }
@@ -285,7 +327,7 @@ private fun KeyButton(
     modifier: Modifier = Modifier,
     bg: Color = Color.White,
     onClick: () -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -293,6 +335,6 @@ private fun KeyButton(
             .clip(RoundedCornerShape(12.dp))
             .background(bg)
             .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.Center
     ) { content() }
 }

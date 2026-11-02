@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -16,20 +17,29 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ojolfund.app.ui.components.OjolBottomBar
 import com.ojolfund.app.ui.screens.AddExpenseScreen
+import com.ojolfund.app.ui.screens.AddOrderScreen
+import com.ojolfund.app.ui.screens.CommunityChatScreen
+import com.ojolfund.app.ui.screens.CommunityScreen
+import com.ojolfund.app.ui.screens.FuelScreen
 import com.ojolfund.app.ui.screens.HomeScreen
 import com.ojolfund.app.ui.screens.LoginScreen
 import com.ojolfund.app.ui.screens.OtpScreen
 import com.ojolfund.app.ui.screens.PhoneLoginScreen
 import com.ojolfund.app.ui.screens.ProfileScreen
 import com.ojolfund.app.ui.screens.RegisterScreen
+import com.ojolfund.app.ui.screens.ReportScreen
 import com.ojolfund.app.ui.screens.ShiftScreen
+import com.ojolfund.app.ui.screens.SummaryScreen
+import com.ojolfund.app.ui.screens.TargetScreen
 import com.ojolfund.app.ui.screens.TransactionsScreen
 import com.ojolfund.app.ui.screens.VehicleScreen
 import com.ojolfund.app.ui.screens.WelcomeScreen
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.viewmodel.AuthViewModel
+import com.ojolfund.app.viewmodel.CommunityViewModel
 import com.ojolfund.app.viewmodel.LedgerViewModel
 import com.ojolfund.app.viewmodel.OtpAuthViewModel
+import com.ojolfund.app.viewmodel.PlanViewModel
 
 object Routes {
     const val WELCOME = "welcome"
@@ -43,8 +53,18 @@ object Routes {
     const val VEHICLE = "vehicle"
     const val PROFILE = "profile"
     const val ADD_EXPENSE = "add_expense"
+    const val ADD_ORDER = "add_order"
+    const val FUEL = "fuel"
+    const val SUMMARY = "summary"
+    const val REPORT = "report"
+    const val TARGET = "target"
+    const val COMMUNITY = "community"
+    const val COMMUNITY_CHAT = "community_chat"
 
     val mainTabs = setOf(HOME, TRANSACTIONS, SHIFT, VEHICLE, PROFILE)
+
+    /** Layar detail yang tetap menampilkan bottom bar (tidak ada tab yang terpilih). */
+    val withBottomBar = mainTabs + setOf(SUMMARY, REPORT, TARGET)
 }
 
 @Composable
@@ -53,6 +73,8 @@ fun OjolFundApp() {
     val authVm: AuthViewModel = viewModel(factory = AuthViewModel.Factory)
     val otpVm: OtpAuthViewModel = viewModel()
     val ledgerVm: LedgerViewModel = viewModel()
+    val planVm: PlanViewModel = viewModel()
+    val communityVm: CommunityViewModel = viewModel()
 
     val backStack by nav.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
@@ -60,7 +82,7 @@ fun OjolFundApp() {
     Scaffold(
         containerColor = OjolColors.Canvas,
         bottomBar = {
-            if (currentRoute in Routes.mainTabs) {
+            if (currentRoute in Routes.withBottomBar) {
                 OjolBottomBar(currentRoute = currentRoute) { route -> nav.navigateTab(route) }
             }
         }
@@ -130,8 +152,14 @@ fun OjolFundApp() {
                 HomeScreen(
                     ledgerVm = ledgerVm,
                     onAddExpense = { nav.navigate(Routes.ADD_EXPENSE) },
+                    onAddOrder = { nav.navigate(Routes.ADD_ORDER) },
+                    onFuel = { nav.navigate(Routes.FUEL) },
                     onStartShift = { nav.navigateTab(Routes.SHIFT) },
                     onSeeAll = { nav.navigateTab(Routes.TRANSACTIONS) },
+                    onSummary = { nav.navigate(Routes.SUMMARY) },
+                    onReport = { nav.navigate(Routes.REPORT) },
+                    onCommunity = { nav.navigate(Routes.COMMUNITY) },
+                    onTarget = { nav.navigate(Routes.TARGET) },
                     onProfile = { nav.navigateTab(Routes.PROFILE) }
                 )
             }
@@ -147,7 +175,7 @@ fun OjolFundApp() {
             }
             composable(Routes.VEHICLE) {
                 VehicleScreen(
-                    onAddFuel = { nav.navigate(Routes.ADD_EXPENSE) },
+                    onAddFuel = { nav.navigate(Routes.FUEL) },
                     onProfile = { nav.navigateTab(Routes.PROFILE) }
                 )
             }
@@ -169,6 +197,48 @@ fun OjolFundApp() {
                         nav.popBackStack()
                     }
                 )
+            }
+            composable(Routes.ADD_ORDER) {
+                val trips by ledgerVm.tripsToday.collectAsState()
+                AddOrderScreen(
+                    tripsToday = trips,
+                    onBack = { nav.popBackStack() },
+                    onSave = { platform, gross, pct, route, method, note ->
+                        ledgerVm.addOrder(platform, gross, pct, route, method, note)
+                        nav.popBackStack()
+                    }
+                )
+            }
+            composable(Routes.FUEL) {
+                FuelScreen(
+                    onBack = { nav.popBackStack() },
+                    onSave = { label, liters, amount, method, station ->
+                        ledgerVm.addFuel(label, liters, amount, method, station)
+                    },
+                    onDone = { nav.popBackStack() }
+                )
+            }
+            composable(Routes.SUMMARY) {
+                SummaryScreen(
+                    onBack = { nav.popBackStack() },
+                    onSeeTransactions = { nav.navigateTab(Routes.TRANSACTIONS) }
+                )
+            }
+            composable(Routes.REPORT) {
+                ReportScreen(onBack = { nav.popBackStack() })
+            }
+            composable(Routes.TARGET) {
+                TargetScreen(vm = planVm, onBack = { nav.popBackStack() })
+            }
+            composable(Routes.COMMUNITY) {
+                CommunityScreen(
+                    vm = communityVm,
+                    onBack = { nav.popBackStack() },
+                    onOpenChat = { nav.navigate(Routes.COMMUNITY_CHAT) }
+                )
+            }
+            composable(Routes.COMMUNITY_CHAT) {
+                CommunityChatScreen(vm = communityVm, onBack = { nav.popBackStack() })
             }
         }
     }

@@ -199,4 +199,3 @@ private fun LoginScreenPreview() {
         )
     }
 }
-

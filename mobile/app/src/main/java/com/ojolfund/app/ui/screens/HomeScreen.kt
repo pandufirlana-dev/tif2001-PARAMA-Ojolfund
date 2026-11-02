@@ -73,8 +73,14 @@ import com.ojolfund.app.viewmodel.LedgerViewModel
 fun HomeScreen(
     ledgerVm: LedgerViewModel,
     onAddExpense: () -> Unit,
+    onAddOrder: () -> Unit,
+    onFuel: () -> Unit,
     onStartShift: () -> Unit,
     onSeeAll: () -> Unit,
+    onSummary: () -> Unit,
+    onReport: () -> Unit,
+    onCommunity: () -> Unit,
+    onTarget: () -> Unit,
     onProfile: () -> Unit
 ) {
     val context = LocalContext.current
@@ -243,11 +249,7 @@ fun HomeScreen(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    onClick = {
-                        context.toast(
-                            "Tambah order (demo): GoRide / Grab / Maxim"
-                        )
-                    }
+                    onClick = onAddOrder
                 )
 
                 QuickAction(
@@ -302,14 +304,15 @@ fun HomeScreen(
                         )
                     },
                     modifier = Modifier.weight(1f),
-                    onClick = onAddExpense
+                    onClick = onFuel
                 )
             }
 
             // Ringkasan
             SectionHeader(
                 "Ringkasan Hari Ini",
-                action = "24 Okt",
+                action = "Lihat Detail",
+                onAction = onSummary,
                 actionColor = OjolColors.Primary
             )
 
@@ -456,17 +459,20 @@ fun HomeScreen(
                 UpcomingRow(
                     Icons.Filled.Analytics,
                     "Analisis Jam Ramai",
-                    "Peta rekomendasi order gacor"
+                    "Peta rekomendasi order gacor",
+                    onClick = onReport
                 )
                 UpcomingRow(
                     Icons.Filled.Groups,
                     "Komunitas Driver Ojol",
-                    "Info razia, pangkalan & warung santai"
+                    "Info razia, pangkalan & warung santai",
+                    onClick = onCommunity
                 )
                 UpcomingRow(
                     Icons.Filled.EmojiEvents,
                     "Target Harian & Bonus",
-                    "Lacak tupo dan insentif multi-app"
+                    "Lacak tupo dan insentif multi-app",
+                    onClick = onTarget
                 )
             }
 
@@ -704,15 +710,11 @@ private fun ActivityRow(tx: Transaction, onClick: () -> Unit) {
 }
 
 @Composable
-private fun UpcomingRow(icon: ImageVector, title: String, subtitle: String) {
-    val context = LocalContext.current
-
+private fun UpcomingRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                context.toast("$title — segera hadir")
-            }
+            .clickable(onClick = onClick)
             .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -761,8 +763,14 @@ fun HomeScreenPreview() {
     HomeScreen(
         ledgerVm = ledgerVm,
         onAddExpense = {},
+        onAddOrder = {},
+        onFuel = {},
         onStartShift = {},
         onSeeAll = {},
+        onSummary = {},
+        onReport = {},
+        onCommunity = {},
+        onTarget = {},
         onProfile = {}
     )
 }

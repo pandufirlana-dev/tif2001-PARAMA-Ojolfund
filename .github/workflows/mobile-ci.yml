@@ -1,11 +1,10 @@
 name: Android Mobile CI
 
+# Tanpa filter 'paths' agar status check wajib (branch protection)
+# selalu dilaporkan pada setiap PR ke main.
 on:
   pull_request:
     branches: [ main ]
-    paths:
-      - 'mobile/**'
-      - '.github/workflows/mobile-ci.yml'
   workflow_dispatch:
 
 concurrency:
@@ -47,4 +46,12 @@ jobs:
         with:
           name: lint-report
           path: mobile/app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore
+
+      - name: Upload Unit Test Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: mobile/app/build/reports/tests/testDebugUnitTest
           if-no-files-found: ignore

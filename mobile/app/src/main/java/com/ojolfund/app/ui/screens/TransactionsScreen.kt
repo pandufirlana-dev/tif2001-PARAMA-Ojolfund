@@ -50,6 +50,7 @@ import com.ojolfund.app.data.formatRupiah
 import com.ojolfund.app.ui.components.OjolCard
 import com.ojolfund.app.ui.components.OjolTopBar
 import com.ojolfund.app.ui.components.Pill
+import com.ojolfund.app.ui.components.StaggerIn
 import com.ojolfund.app.ui.components.TagIcon
 import com.ojolfund.app.ui.components.tagStyle
 import com.ojolfund.app.ui.components.toast
@@ -187,8 +188,10 @@ fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, 
                 // Daftar per hari
                 grouped.forEach { (group, items) ->
                     GroupHeader(group)
-                    items.forEach { tx ->
-                        TransactionCard(tx, onClick = { context.toast("${tx.tag}: ${tx.title}") })
+                    items.forEachIndexed { index, tx ->
+                        StaggerIn(index) {
+                            TransactionCard(tx, onClick = { context.toast("${tx.tag}: ${tx.title}") })
+                        }
                     }
                 }
 

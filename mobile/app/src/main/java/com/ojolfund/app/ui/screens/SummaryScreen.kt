@@ -62,6 +62,8 @@ import com.ojolfund.app.ui.components.Pill
 import com.ojolfund.app.ui.components.PrimaryButton
 import com.ojolfund.app.ui.components.ProgressLine
 import com.ojolfund.app.ui.components.SoftButton
+import com.ojolfund.app.ui.components.growX
+import com.ojolfund.app.ui.components.rememberGrow
 import com.ojolfund.app.ui.components.toast
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
@@ -360,8 +362,9 @@ private fun PlatformCard(day: DaySummary) {
             Text("${day.platforms.size} Aplikasi Aktif", style = OjolText.LabelMd, color = OjolColors.TextVariant)
         }
         Spacer(Modifier.height(10.dp))
+        val grow = rememberGrow(delayMillis = 200)
         Row(
-            Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+            Modifier.fillMaxWidth().height(8.dp).clip(CircleShape).growX(grow),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             day.platforms.forEachIndexed { i, p ->

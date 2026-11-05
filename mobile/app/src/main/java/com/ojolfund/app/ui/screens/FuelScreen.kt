@@ -55,6 +55,7 @@ import com.ojolfund.app.data.formatDecimal
 import com.ojolfund.app.data.formatNumber
 import com.ojolfund.app.data.formatRupiah
 import com.ojolfund.app.ui.components.AmountField
+import com.ojolfund.app.ui.components.AnimatedCheckBadge
 import com.ojolfund.app.ui.components.CheckRow
 import com.ojolfund.app.ui.components.ChoiceChip
 import com.ojolfund.app.ui.components.DetailHeader
@@ -522,14 +523,7 @@ private fun FuelSavedDialog(onClose: () -> Unit) {
                         tint = OjolColors.PrimaryDeep,
                         iconSize = 40.dp
                     )
-                    IconBox(
-                        Icons.Filled.CheckCircle,
-                        size = 30.dp,
-                        radius = 15.dp,
-                        bg = OjolColors.Primary,
-                        tint = Color.White,
-                        iconSize = 18.dp
-                    )
+                    AnimatedCheckBadge(size = 30.dp, background = OjolColors.Primary)
                 }
                 Spacer(Modifier.height(16.dp))
                 Text(

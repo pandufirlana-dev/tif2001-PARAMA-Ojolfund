@@ -2,9 +2,14 @@ package com.ojolfund.app.ui.components
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +43,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +60,8 @@ import androidx.compose.ui.unit.sp
 import com.ojolfund.app.ui.Routes
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
+
+private const val PROGRESS_FILL_MILLIS = 800
 
 fun Context.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -69,9 +79,17 @@ fun OjolCard(
     onClick: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val clickMod = if (onClick != null) Modifier.clip(shape).clickable(onClick = onClick) else Modifier
+    val source = remember { MutableInteractionSource() }
+    val scale = rememberPressScale(source, pressed = 0.98f)
+    val clickMod = if (onClick != null) {
+        Modifier.clip(
+            shape
+        ).clickable(interactionSource = source, indication = LocalIndication.current, onClick = onClick)
+    } else {
+        Modifier
+    }
     Surface(
-        modifier = modifier,
+        modifier = modifier.pressScale(scale),
         shape = shape,
         color = color,
         border = BorderStroke(1.dp, borderColor),
@@ -91,6 +109,7 @@ fun Pill(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     dot: Boolean = false,
+    pulse: Boolean = false,
     textSize: TextUnit = 11.sp,
     weight: FontWeight = FontWeight.SemiBold
 ) {
@@ -102,7 +121,16 @@ fun Pill(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        if (dot) Box(Modifier.size(6.dp).clip(CircleShape).background(fg))
+        if (dot) {
+            if (pulse) {
+                PulsingDot(
+                    color = fg,
+                    size = 6.dp
+                )
+            } else {
+                Box(Modifier.size(6.dp).clip(CircleShape).background(fg))
+            }
+        }
         if (icon != null) Icon(icon, contentDescription = null, tint = fg, modifier = Modifier.size(13.dp))
         Text(text, color = fg, fontSize = textSize, fontWeight = weight, maxLines = 1)
     }
@@ -110,7 +138,7 @@ fun Pill(
 
 @Composable
 fun SyncPill(modifier: Modifier = Modifier) {
-    Pill("Tersinkron", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, modifier = modifier, dot = true)
+    Pill("Tersinkron", bg = OjolColors.Aqua, fg = OjolColors.PrimaryDeep, modifier = modifier, dot = true, pulse = true)
 }
 
 @Composable
@@ -148,10 +176,13 @@ fun PrimaryButton(
     height: Dp = 52.dp,
     loading: Boolean = false
 ) {
+    val source = remember { MutableInteractionSource() }
+    val scale = rememberPressScale(source)
     Button(
         onClick = { if (!loading) onClick() },
         enabled = enabled,
-        modifier = modifier.fillMaxWidth().height(height),
+        interactionSource = source,
+        modifier = modifier.fillMaxWidth().height(height).pressScale(scale),
         shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = color,
@@ -187,9 +218,12 @@ fun SoftButton(
     fg: Color = OjolColors.Primary,
     height: Dp = 48.dp
 ) {
+    val source = remember { MutableInteractionSource() }
+    val scale = rememberPressScale(source)
     Button(
         onClick = onClick,
-        modifier = modifier.height(height),
+        interactionSource = source,
+        modifier = modifier.height(height).pressScale(scale),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = bg, contentColor = fg),
         elevation = null
@@ -239,6 +273,11 @@ fun ProgressLine(
     track: Color = OjolColors.GrayBox2,
     height: Dp = 8.dp
 ) {
+    val target = progress.coerceIn(0f, 1f)
+    val animated = remember { Animatable(0f) }
+    LaunchedEffect(target) {
+        animated.animateTo(target, tween(PROGRESS_FILL_MILLIS, easing = FastOutSlowInEasing))
+    }
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -248,7 +287,7 @@ fun ProgressLine(
     ) {
         Box(
             Modifier
-                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                .fillMaxWidth(animated.value)
                 .height(height)
                 .clip(CircleShape)
                 .background(color)
@@ -353,7 +392,7 @@ fun PageHeader(title: String, modifier: Modifier = Modifier, onBell: () -> Unit 
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Box(Modifier.size(7.dp).clip(CircleShape).background(OjolColors.Primary))
+                    PulsingDot(color = OjolColors.Primary, size = 7.dp)
                     Text("Tersinkron", style = OjolText.LabelMd, color = OjolColors.Primary)
                 }
             }

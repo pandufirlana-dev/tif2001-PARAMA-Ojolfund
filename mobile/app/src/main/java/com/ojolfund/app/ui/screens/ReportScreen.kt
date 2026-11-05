@@ -66,6 +66,8 @@ import com.ojolfund.app.ui.components.OjolCard
 import com.ojolfund.app.ui.components.Pill
 import com.ojolfund.app.ui.components.PrimaryButton
 import com.ojolfund.app.ui.components.SoftButton
+import com.ojolfund.app.ui.components.growX
+import com.ojolfund.app.ui.components.rememberGrow
 import com.ojolfund.app.ui.components.toast
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
@@ -299,7 +301,8 @@ private fun BarChart(bars: List<ReportBar>) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Bottom
     ) {
-        bars.forEach { bar ->
+        bars.forEachIndexed { index, bar ->
+            val grow = rememberGrow(delayMillis = index * BAR_STAGGER_MS)
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -316,7 +319,7 @@ private fun BarChart(bars: List<ReportBar>) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(totalHeight.dp)
+                        .height((totalHeight * grow.value).dp)
                         .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                         .background(OjolColors.AquaSoft),
                     verticalArrangement = Arrangement.Bottom
@@ -324,7 +327,7 @@ private fun BarChart(bars: List<ReportBar>) {
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .height(netHeight.dp)
+                            .height((netHeight * grow.value).dp)
                             .background(if (bar == best) OjolColors.Primary else OjolColors.Emerald)
                     )
                 }
@@ -336,6 +339,7 @@ private fun BarChart(bars: List<ReportBar>) {
 }
 
 private const val CHART_HEIGHT = 150
+private const val BAR_STAGGER_MS = 80
 private const val MIN_BAR = 12
 
 private fun compactK(value: Long): String = (value / 1_000).toString() + "k"
@@ -472,8 +476,9 @@ private fun PlatformEfficiencyCard() {
             )
         }
         Spacer(Modifier.height(8.dp))
+        val grow = rememberGrow(delayMillis = 200)
         Row(
-            Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+            Modifier.fillMaxWidth().height(8.dp).clip(CircleShape).growX(grow),
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Box(Modifier.weight(54f).fillMaxHeight().background(OjolColors.Primary))

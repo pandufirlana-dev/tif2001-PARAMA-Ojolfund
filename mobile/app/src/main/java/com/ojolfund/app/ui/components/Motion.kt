@@ -4,12 +4,14 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -23,12 +25,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ojolfund.app.data.formatNumber
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // Komponen animasi kecil yang dipakai bersama oleh banyak layar.
 
@@ -39,6 +48,10 @@ private const val PRESS_SCALE = 0.96f
 private const val PRESS_STIFFNESS = 700f
 private const val PRESS_DAMPING = 0.6f
 private const val COUNT_UP_MILLIS = 900
+private const val STAGGER_STEP_MILLIS = 70L
+private const val STAGGER_MAX_INDEX = 8
+private const val STAGGER_MILLIS = 380
+private const val GROW_MILLIS = 700
 
 /**
  * Titik status yang berdenyut: titik inti menyala-redup terus-menerus, ditambah cincin tipis yang
@@ -128,3 +141,88 @@ fun CountUpText(
         overflow = overflow
     )
 }
+
+/**
+ * Membungkus [content] agar muncul bertahap: memudar masuk sambil naik sedikit.
+ * [index] menentukan jeda (tiap item 70 ms setelah sebelumnya, maksimal 8 item) sehingga daftar terasa mengalir.
+ */
+@Composable
+fun StaggerIn(index: Int, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    val progress = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        delay(index.coerceIn(0, STAGGER_MAX_INDEX) * STAGGER_STEP_MILLIS)
+        progress.animateTo(1f, tween(STAGGER_MILLIS, easing = FastOutSlowInEasing))
+    }
+    Box(
+        modifier.graphicsLayer {
+            alpha = progress.value
+            translationY = (1f - progress.value) * 14.dp.toPx()
+        }
+    ) {
+        content()
+    }
+}
+
+/** Nilai 0..1 yang tumbuh sekali saat layar tampil (setelah [delayMillis]); dipakai batang grafik dan bar progres. */
+@Composable
+fun rememberGrow(delayMillis: Int = 0, durationMillis: Int = GROW_MILLIS): State<Float> {
+    val progress = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        delay(delayMillis.toLong())
+        progress.animateTo(1f, tween(durationMillis, easing = FastOutSlowInEasing))
+    }
+    return progress.asState()
+}
+
+/** Memperlebar elemen dari kiri ke kanan sesuai [progress] (untuk bar bersegmen). */
+fun Modifier.growX(progress: State<Float>): Modifier = graphicsLayer {
+    scaleX = progress.value
+    transformOrigin = TransformOrigin(0f, 0.5f)
+}
+
+/**
+ * Lencana centang sukses: lingkaran membesar dengan pantulan, lalu tanda centang tergambar bertahap.
+ */
+@Composable
+fun AnimatedCheckBadge(
+    modifier: Modifier = Modifier,
+    size: Dp = 30.dp,
+    background: Color = Color(0xFF087F78),
+    checkColor: Color = Color.White
+) {
+    val pop = remember { Animatable(0f) }
+    val draw = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        launch { pop.animateTo(1f, spring(dampingRatio = 0.5f, stiffness = Spring.StiffnessMediumLow)) }
+        delay(CHECK_DELAY_MILLIS)
+        draw.animateTo(1f, tween(CHECK_DRAW_MILLIS, easing = FastOutSlowInEasing))
+    }
+    Canvas(
+        modifier
+            .size(size)
+            .graphicsLayer {
+                scaleX = pop.value
+                scaleY = pop.value
+            }
+    ) {
+        drawCircle(color = background)
+        val w = this.size.width
+        val check = Path().apply {
+            moveTo(w * 0.28f, w * 0.52f)
+            lineTo(w * 0.44f, w * 0.68f)
+            lineTo(w * 0.74f, w * 0.36f)
+        }
+        val measure = PathMeasure()
+        measure.setPath(check, false)
+        val partial = Path()
+        measure.getSegment(0f, measure.length * draw.value, partial, true)
+        drawPath(
+            path = partial,
+            color = checkColor,
+            style = Stroke(width = w * 0.09f, cap = StrokeCap.Round)
+        )
+    }
+}
+
+private const val CHECK_DELAY_MILLIS = 180L
+private const val CHECK_DRAW_MILLIS = 380

@@ -1,5 +1,7 @@
 package com.ojolfund.app.ui.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,15 +12,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
@@ -47,13 +51,34 @@ fun AuthHeroLogo(modifier: Modifier = Modifier) {
     }
 }
 
+private val SHAKE_OFFSETS = listOf(-10f, 10f, -6f, 6f, 0f)
+private const val SHAKE_STEP_MILLIS = 55
+private const val APPEAR_MILLIS = 250
+
 /** Banner pesan: merah untuk galat dari server, hijau-mint untuk informasi sukses. */
 @Composable
 fun MessageBanner(message: String, isError: Boolean, modifier: Modifier = Modifier) {
     val bg = if (isError) OjolColors.ExpenseBg else OjolColors.Mint
     val fg = if (isError) OjolColors.ExpenseText else OjolColors.PrimaryDeep
+
+    // Galat: bergetar sekali ke kiri-kanan agar terlihat; sukses: muncul memudar.
+    val shake = remember { Animatable(0f) }
+    LaunchedEffect(message, isError) {
+        if (isError) {
+            for (offset in SHAKE_OFFSETS) shake.animateTo(offset, tween(SHAKE_STEP_MILLIS))
+        }
+    }
+    val appear = remember { Animatable(0f) }
+    LaunchedEffect(message) {
+        appear.snapTo(0f)
+        appear.animateTo(1f, tween(APPEAR_MILLIS))
+    }
     Row(
         modifier = modifier
+            .graphicsLayer {
+                alpha = appear.value
+                translationX = shake.value.dp.toPx()
+            }
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(bg)
@@ -61,12 +86,11 @@ fun MessageBanner(message: String, isError: Boolean, modifier: Modifier = Modifi
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Icon(
-            if (isError) Icons.Filled.Info else Icons.Filled.CheckCircle,
-            contentDescription = null,
-            tint = fg,
-            modifier = Modifier.size(20.dp)
-        )
+        if (isError) {
+            Icon(Icons.Filled.Info, contentDescription = null, tint = fg, modifier = Modifier.size(20.dp))
+        } else {
+            AnimatedCheckBadge(size = 20.dp, background = fg)
+        }
         Text(message, style = OjolText.BodyMd, color = fg)
     }
 }

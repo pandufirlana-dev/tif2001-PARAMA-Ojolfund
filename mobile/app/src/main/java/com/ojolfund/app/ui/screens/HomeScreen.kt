@@ -63,6 +63,7 @@ import com.ojolfund.app.ui.components.OjolCard
 import com.ojolfund.app.ui.components.OjolTopBar
 import com.ojolfund.app.ui.components.Pill
 import com.ojolfund.app.ui.components.SectionHeader
+import com.ojolfund.app.ui.components.StaggerIn
 import com.ojolfund.app.ui.components.TagIcon
 import com.ojolfund.app.ui.components.tagStyle
 import com.ojolfund.app.ui.components.toast
@@ -409,12 +410,14 @@ fun HomeScreen(
                     if (index > 0) {
                         HorizontalDivider(color = OjolColors.Border)
                     }
-                    ActivityRow(
-                        tx,
-                        onClick = {
-                            context.toast("${tx.tag}: ${tx.title}")
-                        }
-                    )
+                    StaggerIn(index) {
+                        ActivityRow(
+                            tx,
+                            onClick = {
+                                context.toast("${tx.tag}: ${tx.title}")
+                            }
+                        )
+                    }
                 }
             }
 

@@ -54,6 +54,7 @@ import com.ojolfund.app.ui.components.OjolTextField
 import com.ojolfund.app.ui.components.Pill
 import com.ojolfund.app.ui.components.PrimaryButton
 import com.ojolfund.app.ui.components.SoftButton
+import com.ojolfund.app.ui.components.StaggerIn
 import com.ojolfund.app.ui.components.toast
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
@@ -152,21 +153,23 @@ fun CommunityScreen(vm: CommunityViewModel, onBack: () -> Unit, onOpenChat: () -
                         modifier = Modifier.fillMaxWidth().padding(24.dp)
                     )
                 }
-                visible.forEach { report ->
-                    ReportCard(
-                        report = report,
-                        onPrimary = { vm.vote(report.id, true) },
-                        onSecondary = {
-                            if (report.secondaryIsVote) {
-                                vm.vote(
-                                    report.id,
-                                    false
-                                )
-                            } else {
-                                context.toast("Membuka jalur alternatif (demo)")
+                visible.forEachIndexed { index, report ->
+                    StaggerIn(index) {
+                        ReportCard(
+                            report = report,
+                            onPrimary = { vm.vote(report.id, true) },
+                            onSecondary = {
+                                if (report.secondaryIsVote) {
+                                    vm.vote(
+                                        report.id,
+                                        false
+                                    )
+                                } else {
+                                    context.toast("Membuka jalur alternatif (demo)")
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }

@@ -2,6 +2,9 @@ package com.ojolfund.app.ui.components
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -40,6 +43,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -56,6 +60,8 @@ import androidx.compose.ui.unit.sp
 import com.ojolfund.app.ui.Routes
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
+
+private const val PROGRESS_FILL_MILLIS = 800
 
 fun Context.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -267,6 +273,11 @@ fun ProgressLine(
     track: Color = OjolColors.GrayBox2,
     height: Dp = 8.dp
 ) {
+    val target = progress.coerceIn(0f, 1f)
+    val animated = remember { Animatable(0f) }
+    LaunchedEffect(target) {
+        animated.animateTo(target, tween(PROGRESS_FILL_MILLIS, easing = FastOutSlowInEasing))
+    }
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -276,7 +287,7 @@ fun ProgressLine(
     ) {
         Box(
             Modifier
-                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                .fillMaxWidth(animated.value)
                 .height(height)
                 .clip(CircleShape)
                 .background(color)

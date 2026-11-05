@@ -126,7 +126,7 @@ fun CommunityChatScreen(vm: CommunityViewModel, onBack: () -> Unit) {
             }
         }
 
-        Column(Modifier.background(Color.White).padding(horizontal = 12.dp, vertical = 8.dp)) {
+        Column(Modifier.background(OjolColors.Card).padding(horizontal = 12.dp, vertical = 8.dp)) {
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 CommunityData.quickReplies.forEach { text ->
                     Text(
@@ -187,7 +187,7 @@ fun CommunityChatScreen(vm: CommunityViewModel, onBack: () -> Unit) {
 
 @Composable
 private fun GroupCard() {
-    Surface(shape = RoundedCornerShape(16.dp), color = Color.White, shadowElevation = 1.dp) {
+    Surface(shape = RoundedCornerShape(16.dp), color = OjolColors.Card, shadowElevation = 1.dp) {
         Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
             IconBox(Icons.Filled.Groups, size = 52.dp, radius = 26.dp, bg = OjolColors.Aqua, iconSize = 26.dp)
             Spacer(Modifier.width(12.dp))
@@ -281,7 +281,7 @@ private fun MessageBubble(msg: ChatMessage, onAction: () -> Unit, onReact: (Int)
                     when {
                         msg.isMine -> OjolColors.Primary
                         msg.isBot -> OjolColors.AquaSoft
-                        else -> Color.White
+                        else -> OjolColors.Card
                     }
                 )
                 .padding(12.dp)

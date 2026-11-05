@@ -60,11 +60,14 @@ import com.ojolfund.app.data.formatRupiah
 import com.ojolfund.app.ui.components.CountUpText
 import com.ojolfund.app.ui.components.IconBox
 import com.ojolfund.app.ui.components.OjolCard
+import com.ojolfund.app.ui.components.OjolRefreshBox
 import com.ojolfund.app.ui.components.OjolTopBar
 import com.ojolfund.app.ui.components.Pill
 import com.ojolfund.app.ui.components.SectionHeader
+import com.ojolfund.app.ui.components.ShimmerBox
 import com.ojolfund.app.ui.components.StaggerIn
 import com.ojolfund.app.ui.components.TagIcon
+import com.ojolfund.app.ui.components.rememberSkeletonLoading
 import com.ojolfund.app.ui.components.tagStyle
 import com.ojolfund.app.ui.components.toast
 import com.ojolfund.app.ui.theme.OjolColors
@@ -87,6 +90,7 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val transactions by ledgerVm.transactions.collectAsState()
+    val loading = rememberSkeletonLoading("home")
 
     Column(
         Modifier
@@ -99,388 +103,394 @@ fun HomeScreen(
             onAvatar = onProfile
         )
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            // Sapaan
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        "Selamat pagi, Driver Budi! 👋",
-                        style = OjolText.HeadlineLg,
-                        color = OjolColors.TextPrimary
-                    )
-                    Text(
-                        "Siap cari cuan hari ini?",
-                        style = OjolText.BodyMd,
-                        color = OjolColors.TextVariant
-                    )
-                }
-            }
-
-            // Kartu untung bersih
+        OjolRefreshBox(Modifier.weight(1f), onRefreshed = { context.toast("Data tersinkron") }) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                Color.White,
-                                Color.White,
-                                Color(0xFFE6F8F5)
-                            )
-                        )
-                    )
-                    .border(
-                        1.dp,
-                        OjolColors.Border,
-                        RoundedCornerShape(20.dp)
-                    )
-                    .padding(20.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                if (loading) {
+                    HomeSkeleton()
+                } else {
+                    // Sapaan
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Filled.AccountBalanceWallet,
-                            contentDescription = null,
-                            tint = OjolColors.Primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            "Untung Bersih Hari Ini",
-                            style = OjolText.LabelLg,
-                            color = OjolColors.TextPrimary
-                        )
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                "Selamat pagi, Driver Budi! 👋",
+                                style = OjolText.HeadlineLg,
+                                color = OjolColors.TextPrimary
+                            )
+                            Text(
+                                "Siap cari cuan hari ini?",
+                                style = OjolText.BodyMd,
+                                color = OjolColors.TextVariant
+                            )
+                        }
                     }
 
-                    Pill(
-                        "Kamis, 24 Okt 2024",
-                        bg = OjolColors.GrayBox2,
-                        fg = OjolColors.TextVariant,
-                        textSize = 10.sp
-                    )
-                }
-
-                Spacer(Modifier.height(10.dp))
-
-                CountUpText(
-                    "Rp125.000",
-                    style = OjolText.Display.copy(fontSize = 38.sp),
-                    color = OjolColors.Primary
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.TrendingUp,
-                        contentDescription = null,
-                        tint = OjolColors.PrimaryDeep,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        "+18% dibanding kemarin di jam yang sama",
-                        style = OjolText.BodySm,
-                        color = OjolColors.PrimaryDeep
-                    )
-                }
-
-                Spacer(Modifier.height(14.dp))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    MiniStat(
-                        "Kotor",
-                        "Rp165.000",
-                        OjolColors.TextPrimary,
-                        OjolColors.GrayBox,
-                        Modifier.weight(1f)
-                    )
-                    MiniStat(
-                        "Potongan",
-                        "-Rp25.000",
-                        OjolColors.ExpenseText,
-                        OjolColors.GrayBox,
-                        Modifier.weight(1f)
-                    )
-                    MiniStat(
-                        "Operasional",
-                        "-Rp15.000",
-                        OjolColors.ExpenseText,
-                        OjolColors.ExpenseBg,
-                        Modifier.weight(1f)
-                    )
-                }
-            }
-
-            // Aksi cepat
-            SectionHeader(
-                "Aksi Cepat",
-                action = "Satu Ketukan",
-                actionColor = OjolColors.TextVariant
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                QuickAction(
-                    icon = Icons.Filled.TwoWheeler,
-                    iconBg = OjolColors.Aqua,
-                    iconTint = OjolColors.PrimaryDeep,
-                    title = "Tambah Order",
-                    subtitle = "Multi-aplikasi",
-                    trailing = {
-                        Icon(
-                            Icons.Filled.Add,
-                            null,
-                            tint = OjolColors.TextSecondary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    onClick = onAddOrder
-                )
-
-                QuickAction(
-                    icon = Icons.Filled.Receipt,
-                    iconBg = OjolColors.GrayBox2,
-                    iconTint = OjolColors.TextVariant,
-                    title = "Pengeluaran",
-                    subtitle = "Makan & parkir",
-                    trailing = {
-                        Text(
-                            "–",
-                            color = OjolColors.TextSecondary,
-                            fontSize = 18.sp
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    onClick = onAddExpense
-                )
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                QuickAction(
-                    icon = Icons.Filled.PlayArrow,
-                    iconBg = OjolColors.Aqua,
-                    iconTint = OjolColors.PrimaryDeep,
-                    title = "Mulai Shift",
-                    subtitle = "Lacak jam on-bid",
-                    trailing = {
-                        Pill(
-                            "Siap",
-                            bg = OjolColors.Aqua,
-                            fg = OjolColors.PrimaryDeep,
-                            textSize = 10.sp
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    onClick = onStartShift
-                )
-
-                QuickAction(
-                    icon = Icons.Filled.LocalGasStation,
-                    iconBg = OjolColors.Aqua,
-                    iconTint = OjolColors.PrimaryDeep,
-                    title = "Catat BBM",
-                    subtitle = "Isi bensin kilat",
-                    trailing = {
-                        Pill(
-                            "Cepat",
-                            bg = OjolColors.GrayBox2,
-                            fg = OjolColors.TextVariant,
-                            textSize = 10.sp
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    onClick = onFuel
-                )
-            }
-
-            // Ringkasan
-            SectionHeader(
-                "Ringkasan Hari Ini",
-                action = "Lihat Detail",
-                onAction = onSummary,
-                actionColor = OjolColors.Primary
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatCard(
-                    Icons.Filled.Payments,
-                    "Pendapatan Kotor",
-                    "Rp165.000",
-                    "Total ongkos pelanggan",
-                    OjolColors.TextPrimary,
-                    Modifier.weight(1f)
-                )
-                StatCard(
-                    Icons.Filled.Percent,
-                    "Potongan Platform",
-                    "Rp25.000",
-                    "Bagi hasil rata-rata",
-                    OjolColors.TextPrimary,
-                    Modifier.weight(1f),
-                    suffix = " (15%)"
-                )
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatCard(
-                    Icons.Filled.ShoppingBag,
-                    "Total Pengeluaran",
-                    "Rp15.000",
-                    "Parkir & konsumsi",
-                    OjolColors.ExpenseText,
-                    Modifier.weight(1f),
-                    iconTint = OjolColors.ExpenseText
-                )
-                StatCard(
-                    Icons.Filled.CheckCircle,
-                    "Jumlah Order",
-                    "9 Order",
-                    "Semua selesai lancar",
-                    OjolColors.PrimaryDeep,
-                    Modifier.weight(1f)
-                )
-            }
-
-            // Aktivitas terbaru
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Text(
-                        "Aktivitas Terbaru",
-                        style = OjolText.TitleMd.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = OjolColors.TextPrimary
-                    )
-                    Box(
-                        Modifier
-                            .size(6.dp)
-                            .clip(CircleShape)
-                            .background(OjolColors.Primary)
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.clickable(onClick = onSeeAll),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        "Lihat Semua",
-                        style = OjolText.LabelMd,
-                        color = OjolColors.Primary
-                    )
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = null,
-                        tint = OjolColors.Primary,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
-            }
-
-            OjolCard(
-                modifier = Modifier.fillMaxWidth(),
-                padding = 0.dp
-            ) {
-                transactions.take(4).forEachIndexed { index, tx ->
-                    if (index > 0) {
-                        HorizontalDivider(color = OjolColors.Border)
-                    }
-                    StaggerIn(index) {
-                        ActivityRow(
-                            tx,
-                            onClick = {
-                                context.toast("${tx.tag}: ${tx.title}")
+                    // Kartu untung bersih
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(
+                                        OjolColors.Card,
+                                        OjolColors.Card,
+                                        OjolColors.Wash
+                                    )
+                                )
+                            )
+                            .border(
+                                1.dp,
+                                OjolColors.Border,
+                                RoundedCornerShape(20.dp)
+                            )
+                            .padding(20.dp)
+                    ) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    Icons.Filled.AccountBalanceWallet,
+                                    contentDescription = null,
+                                    tint = OjolColors.Primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    "Untung Bersih Hari Ini",
+                                    style = OjolText.LabelLg,
+                                    color = OjolColors.TextPrimary
+                                )
                             }
+
+                            Pill(
+                                "Kamis, 24 Okt 2024",
+                                bg = OjolColors.GrayBox2,
+                                fg = OjolColors.TextVariant,
+                                textSize = 10.sp
+                            )
+                        }
+
+                        Spacer(Modifier.height(10.dp))
+
+                        CountUpText(
+                            "Rp125.000",
+                            style = OjolText.Display.copy(fontSize = 38.sp),
+                            color = OjolColors.Primary
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.TrendingUp,
+                                contentDescription = null,
+                                tint = OjolColors.PrimaryDeep,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Text(
+                                "+18% dibanding kemarin di jam yang sama",
+                                style = OjolText.BodySm,
+                                color = OjolColors.PrimaryDeep
+                            )
+                        }
+
+                        Spacer(Modifier.height(14.dp))
+
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            MiniStat(
+                                "Kotor",
+                                "Rp165.000",
+                                OjolColors.TextPrimary,
+                                OjolColors.GrayBox,
+                                Modifier.weight(1f)
+                            )
+                            MiniStat(
+                                "Potongan",
+                                "-Rp25.000",
+                                OjolColors.ExpenseText,
+                                OjolColors.GrayBox,
+                                Modifier.weight(1f)
+                            )
+                            MiniStat(
+                                "Operasional",
+                                "-Rp15.000",
+                                OjolColors.ExpenseText,
+                                OjolColors.ExpenseBg,
+                                Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    // Aksi cepat
+                    SectionHeader(
+                        "Aksi Cepat",
+                        action = "Satu Ketukan",
+                        actionColor = OjolColors.TextVariant
+                    )
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuickAction(
+                            icon = Icons.Filled.TwoWheeler,
+                            iconBg = OjolColors.Aqua,
+                            iconTint = OjolColors.PrimaryDeep,
+                            title = "Tambah Order",
+                            subtitle = "Multi-aplikasi",
+                            trailing = {
+                                Icon(
+                                    Icons.Filled.Add,
+                                    null,
+                                    tint = OjolColors.TextSecondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                            onClick = onAddOrder
+                        )
+
+                        QuickAction(
+                            icon = Icons.Filled.Receipt,
+                            iconBg = OjolColors.GrayBox2,
+                            iconTint = OjolColors.TextVariant,
+                            title = "Pengeluaran",
+                            subtitle = "Makan & parkir",
+                            trailing = {
+                                Text(
+                                    "–",
+                                    color = OjolColors.TextSecondary,
+                                    fontSize = 18.sp
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                            onClick = onAddExpense
                         )
                     }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        QuickAction(
+                            icon = Icons.Filled.PlayArrow,
+                            iconBg = OjolColors.Aqua,
+                            iconTint = OjolColors.PrimaryDeep,
+                            title = "Mulai Shift",
+                            subtitle = "Lacak jam on-bid",
+                            trailing = {
+                                Pill(
+                                    "Siap",
+                                    bg = OjolColors.Aqua,
+                                    fg = OjolColors.PrimaryDeep,
+                                    textSize = 10.sp
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                            onClick = onStartShift
+                        )
+
+                        QuickAction(
+                            icon = Icons.Filled.LocalGasStation,
+                            iconBg = OjolColors.Aqua,
+                            iconTint = OjolColors.PrimaryDeep,
+                            title = "Catat BBM",
+                            subtitle = "Isi bensin kilat",
+                            trailing = {
+                                Pill(
+                                    "Cepat",
+                                    bg = OjolColors.GrayBox2,
+                                    fg = OjolColors.TextVariant,
+                                    textSize = 10.sp
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                            onClick = onFuel
+                        )
+                    }
+
+                    // Ringkasan
+                    SectionHeader(
+                        "Ringkasan Hari Ini",
+                        action = "Lihat Detail",
+                        onAction = onSummary,
+                        actionColor = OjolColors.Primary
+                    )
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        StatCard(
+                            Icons.Filled.Payments,
+                            "Pendapatan Kotor",
+                            "Rp165.000",
+                            "Total ongkos pelanggan",
+                            OjolColors.TextPrimary,
+                            Modifier.weight(1f)
+                        )
+                        StatCard(
+                            Icons.Filled.Percent,
+                            "Potongan Platform",
+                            "Rp25.000",
+                            "Bagi hasil rata-rata",
+                            OjolColors.TextPrimary,
+                            Modifier.weight(1f),
+                            suffix = " (15%)"
+                        )
+                    }
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        StatCard(
+                            Icons.Filled.ShoppingBag,
+                            "Total Pengeluaran",
+                            "Rp15.000",
+                            "Parkir & konsumsi",
+                            OjolColors.ExpenseText,
+                            Modifier.weight(1f),
+                            iconTint = OjolColors.ExpenseText
+                        )
+                        StatCard(
+                            Icons.Filled.CheckCircle,
+                            "Jumlah Order",
+                            "9 Order",
+                            "Semua selesai lancar",
+                            OjolColors.PrimaryDeep,
+                            Modifier.weight(1f)
+                        )
+                    }
+
+                    // Aktivitas terbaru
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                "Aktivitas Terbaru",
+                                style = OjolText.TitleMd.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = OjolColors.TextPrimary
+                            )
+                            Box(
+                                Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(OjolColors.Primary)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.clickable(onClick = onSeeAll),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                "Lihat Semua",
+                                style = OjolText.LabelMd,
+                                color = OjolColors.Primary
+                            )
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                tint = OjolColors.Primary,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+
+                    OjolCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        padding = 0.dp
+                    ) {
+                        transactions.take(4).forEachIndexed { index, tx ->
+                            if (index > 0) {
+                                HorizontalDivider(color = OjolColors.Border)
+                            }
+                            StaggerIn(index) {
+                                ActivityRow(
+                                    tx,
+                                    onClick = {
+                                        context.toast("${tx.tag}: ${tx.title}")
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Fitur berikutnya
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.RocketLaunch,
+                                contentDescription = null,
+                                tint = OjolColors.TextVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                "Fitur Berikutnya",
+                                style = OjolText.TitleMd.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = OjolColors.TextPrimary
+                            )
+                        }
+
+                        Text(
+                            "Roadmap Driver",
+                            style = OjolText.LabelMd,
+                            color = OjolColors.TextSecondary
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(OjolColors.GrayBox)
+                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                    ) {
+                        UpcomingRow(
+                            Icons.Filled.Analytics,
+                            "Analisis Jam Ramai",
+                            "Peta rekomendasi order gacor",
+                            onClick = onReport
+                        )
+                        UpcomingRow(
+                            Icons.Filled.Groups,
+                            "Komunitas Driver Ojol",
+                            "Info razia, pangkalan & warung santai",
+                            onClick = onCommunity
+                        )
+                        UpcomingRow(
+                            Icons.Filled.EmojiEvents,
+                            "Target Harian & Bonus",
+                            "Lacak tupo dan insentif multi-app",
+                            onClick = onTarget
+                        )
+                    }
+
+                    Spacer(Modifier.height(8.dp))
                 }
             }
-
-            // Fitur berikutnya
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.RocketLaunch,
-                        contentDescription = null,
-                        tint = OjolColors.TextVariant,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Text(
-                        "Fitur Berikutnya",
-                        style = OjolText.TitleMd.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
-                        color = OjolColors.TextPrimary
-                    )
-                }
-
-                Text(
-                    "Roadmap Driver",
-                    style = OjolText.LabelMd,
-                    color = OjolColors.TextSecondary
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(OjolColors.GrayBox)
-                    .padding(horizontal = 14.dp, vertical = 6.dp)
-            ) {
-                UpcomingRow(
-                    Icons.Filled.Analytics,
-                    "Analisis Jam Ramai",
-                    "Peta rekomendasi order gacor",
-                    onClick = onReport
-                )
-                UpcomingRow(
-                    Icons.Filled.Groups,
-                    "Komunitas Driver Ojol",
-                    "Info razia, pangkalan & warung santai",
-                    onClick = onCommunity
-                )
-                UpcomingRow(
-                    Icons.Filled.EmojiEvents,
-                    "Target Harian & Bonus",
-                    "Lacak tupo dan insentif multi-app",
-                    onClick = onTarget
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
         }
     }
 }
@@ -777,4 +787,18 @@ fun HomeScreenPreview() {
         onTarget = {},
         onProfile = {}
     )
+}
+
+@Composable
+private fun HomeSkeleton() {
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        ShimmerBox(Modifier.fillMaxWidth(0.7f).height(28.dp))
+        ShimmerBox(Modifier.fillMaxWidth(0.4f).height(16.dp))
+        ShimmerBox(Modifier.fillMaxWidth().height(180.dp), RoundedCornerShape(20.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ShimmerBox(Modifier.weight(1f).height(96.dp), RoundedCornerShape(16.dp))
+            ShimmerBox(Modifier.weight(1f).height(96.dp), RoundedCornerShape(16.dp))
+        }
+        repeat(3) { ShimmerBox(Modifier.fillMaxWidth().height(64.dp), RoundedCornerShape(16.dp)) }
+    }
 }

@@ -47,11 +47,15 @@ import androidx.compose.ui.unit.sp
 import com.ojolfund.app.data.SampleData
 import com.ojolfund.app.data.Transaction
 import com.ojolfund.app.data.formatRupiah
+import com.ojolfund.app.ui.components.AnimatedEmptyState
 import com.ojolfund.app.ui.components.OjolCard
+import com.ojolfund.app.ui.components.OjolRefreshBox
 import com.ojolfund.app.ui.components.OjolTopBar
 import com.ojolfund.app.ui.components.Pill
+import com.ojolfund.app.ui.components.ShimmerBox
 import com.ojolfund.app.ui.components.StaggerIn
 import com.ojolfund.app.ui.components.TagIcon
+import com.ojolfund.app.ui.components.rememberSkeletonLoading
 import com.ojolfund.app.ui.components.tagStyle
 import com.ojolfund.app.ui.components.toast
 import com.ojolfund.app.ui.theme.OjolColors
@@ -61,6 +65,7 @@ import com.ojolfund.app.viewmodel.LedgerViewModel
 @Composable
 fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, onProfile: () -> Unit) {
     val context = LocalContext.current
+    val loading = rememberSkeletonLoading("transactions")
     val all by ledgerVm.transactions.collectAsState()
     var filter by remember { mutableIntStateOf(0) } // 0 semua, 1 pendapatan, 2 pengeluaran
 
@@ -78,7 +83,7 @@ fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, 
             onAvatar = onProfile
         )
 
-        Box(Modifier.weight(1f)) {
+        OjolRefreshBox(Modifier.weight(1f), onRefreshed = { context.toast("Data tersinkron") }) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -169,7 +174,7 @@ fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, 
                             "2.470.000",
                             "↗ 76%",
                             OjolColors.PrimaryDeep,
-                            Color(0xFFE3EFEE),
+                            OjolColors.Wash,
                             Modifier.weight(1f)
                         )
                     }
@@ -186,22 +191,24 @@ fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, 
                 }
 
                 // Daftar per hari
-                grouped.forEach { (group, items) ->
-                    GroupHeader(group)
-                    items.forEachIndexed { index, tx ->
-                        StaggerIn(index) {
-                            TransactionCard(tx, onClick = { context.toast("${tx.tag}: ${tx.title}") })
+                if (loading) {
+                    repeat(5) { ShimmerBox(Modifier.fillMaxWidth().height(72.dp), RoundedCornerShape(16.dp)) }
+                } else {
+                    grouped.forEach { (group, items) ->
+                        GroupHeader(group)
+                        items.forEachIndexed { index, tx ->
+                            StaggerIn(index) {
+                                TransactionCard(tx, onClick = { context.toast("${tx.tag}: ${tx.title}") })
+                            }
                         }
                     }
                 }
 
-                if (shown.isEmpty()) {
-                    Text(
-                        "Belum ada transaksi pada filter ini.",
-                        style = OjolText.BodyMd,
-                        color = OjolColors.TextSecondary,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(24.dp)
+                if (!loading && shown.isEmpty()) {
+                    AnimatedEmptyState(
+                        icon = Icons.Filled.Receipt,
+                        title = "Belum ada transaksi",
+                        subtitle = "Tidak ada transaksi pada filter ini. Coba ganti filter atau catat transaksi baru."
                     )
                 }
 
@@ -310,7 +317,7 @@ private fun FilterChipItem(text: String, selected: Boolean, onClick: () -> Unit)
         color = if (selected) Color.White else OjolColors.TextPrimary,
         modifier = Modifier
             .clip(CircleShape)
-            .background(if (selected) OjolColors.PrimaryDeep else Color.White)
+            .background(if (selected) OjolColors.PrimaryDark else OjolColors.Card)
             .border(1.dp, if (selected) OjolColors.PrimaryDeep else OjolColors.Border, CircleShape)
             .clickable(onClick = onClick)
             .padding(horizontal = 18.dp, vertical = 10.dp),
@@ -333,7 +340,9 @@ private fun GroupHeader(group: String) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Box(
-                Modifier.size(8.dp).clip(CircleShape).background(if (isToday) OjolColors.Primary else Color(0xFFBDC9C7))
+                Modifier.size(
+                    8.dp
+                ).clip(CircleShape).background(if (isToday) OjolColors.Primary else OjolColors.Inactive)
             )
             Text(group, style = OjolText.TitleMd.copy(fontWeight = FontWeight.SemiBold), color = OjolColors.TextPrimary)
         }

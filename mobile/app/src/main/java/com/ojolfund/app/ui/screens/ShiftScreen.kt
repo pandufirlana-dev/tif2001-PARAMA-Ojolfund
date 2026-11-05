@@ -134,7 +134,7 @@ fun ShiftScreen(onProfile: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(20.dp))
-                    .background(Brush.verticalGradient(listOf(Color(0xFFE3FAF6), Color.White)))
+                    .background(Brush.verticalGradient(listOf(OjolColors.Wash, OjolColors.Card)))
                     .border(1.dp, OjolColors.Border, RoundedCornerShape(20.dp))
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)

@@ -2,7 +2,9 @@ package com.ojolfund.app.di
 
 import android.content.Context
 import com.ojolfund.app.BuildConfig
+import com.ojolfund.app.data.local.DataStoreThemeStore
 import com.ojolfund.app.data.local.DataStoreTokenStore
+import com.ojolfund.app.data.local.ThemeStore
 import com.ojolfund.app.data.local.TokenStore
 import com.ojolfund.app.data.remote.AuthApiService
 import com.ojolfund.app.data.remote.AuthInterceptor
@@ -18,6 +20,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class AppContainer(context: Context) {
 
     val tokenStore: TokenStore = DataStoreTokenStore(context)
+
+    val themeStore: ThemeStore = DataStoreThemeStore(context)
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor { runBlocking { tokenStore.getToken() } })

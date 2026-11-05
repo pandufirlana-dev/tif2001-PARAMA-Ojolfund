@@ -160,7 +160,7 @@ fun PhoneLoginScreen(vm: OtpAuthViewModel, onBack: () -> Unit, onOtpSent: () -> 
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color.White)
+                        .background(OjolColors.Card)
                         .border(
                             BorderStroke(
                                 1.5.dp,
@@ -416,7 +416,7 @@ private fun MethodOption(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(14.dp))
-            .background(if (selected) OjolColors.Aqua else Color.White)
+            .background(if (selected) OjolColors.Aqua else OjolColors.Card)
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -454,7 +454,7 @@ private fun MethodOption(
                 modifier = Modifier.size(22.dp)
             )
         } else {
-            Box(Modifier.size(20.dp).border(1.5.dp, Color(0xFFBDC9C7), CircleShape))
+            Box(Modifier.size(20.dp).border(1.5.dp, OjolColors.Inactive, CircleShape))
         }
     }
 }

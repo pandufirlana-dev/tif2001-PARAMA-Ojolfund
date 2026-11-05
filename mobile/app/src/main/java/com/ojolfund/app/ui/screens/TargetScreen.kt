@@ -46,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -200,7 +199,7 @@ fun TargetScreen(vm: PlanViewModel, onBack: () -> Unit) {
                     color = OjolColors.Primary,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color.White)
+                        .background(OjolColors.Card)
                         .clickableNoRipple { context.toast("Widget layar kunci (demo)") }
                         .padding(horizontal = 14.dp, vertical = 8.dp)
                 )
@@ -622,7 +621,7 @@ private fun AddBillDialog(onDismiss: () -> Unit, onConfirm: (String, Long) -> Un
     var name by remember { mutableStateOf("") }
     var amount by remember { mutableLongStateOf(0L) }
     Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = RoundedCornerShape(20.dp), color = Color.White) {
+        Surface(shape = RoundedCornerShape(20.dp), color = OjolColors.Card) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("Tambah Pos Tagihan", style = OjolText.TitleLg, color = OjolColors.TextPrimary)
                 OjolTextField(

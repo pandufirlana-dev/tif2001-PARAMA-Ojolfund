@@ -33,6 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ojolfund.app.data.local.ThemeMode
 import com.ojolfund.app.ui.components.OjolBottomBar
 import com.ojolfund.app.ui.screens.AddExpenseScreen
 import com.ojolfund.app.ui.screens.AddOrderScreen
@@ -87,7 +88,7 @@ object Routes {
 }
 
 @Composable
-fun OjolFundApp() {
+fun OjolFundApp(themeMode: ThemeMode = ThemeMode.SYSTEM, onThemeModeChange: (ThemeMode) -> Unit = {}) {
     val nav = rememberNavController()
     val authVm: AuthViewModel = viewModel(factory = AuthViewModel.Factory)
     val otpVm: OtpAuthViewModel = viewModel()
@@ -101,7 +102,7 @@ fun OjolFundApp() {
     var showSplash by rememberSaveable { mutableStateOf(true) }
 
     Box(Modifier.fillMaxSize()) {
-        AppScaffold(nav, authVm, otpVm, ledgerVm, planVm, communityVm, currentRoute)
+        AppScaffold(nav, authVm, otpVm, ledgerVm, planVm, communityVm, currentRoute, themeMode, onThemeModeChange)
         AnimatedVisibility(visible = showSplash, exit = fadeOut(tween(SPLASH_FADE_MS))) {
             SplashScreen(
                 onFinished = { showSplash = false },
@@ -124,7 +125,9 @@ private fun AppScaffold(
     ledgerVm: LedgerViewModel,
     planVm: PlanViewModel,
     communityVm: CommunityViewModel,
-    currentRoute: String?
+    currentRoute: String?,
+    themeMode: ThemeMode,
+    onThemeModeChange: (ThemeMode) -> Unit
 ) {
     Scaffold(
         containerColor = OjolColors.Canvas,
@@ -232,6 +235,8 @@ private fun AppScaffold(
             }
             composable(Routes.PROFILE) {
                 ProfileScreen(
+                    themeMode = themeMode,
+                    onThemeModeChange = onThemeModeChange,
                     onLogout = {
                         authVm.logout()
                         nav.navigate(Routes.WELCOME) {

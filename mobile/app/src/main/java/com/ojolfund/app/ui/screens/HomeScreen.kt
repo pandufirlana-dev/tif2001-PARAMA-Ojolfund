@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ojolfund.app.data.Transaction
 import com.ojolfund.app.data.formatRupiah
+import com.ojolfund.app.ui.components.CountUpText
 import com.ojolfund.app.ui.components.IconBox
 import com.ojolfund.app.ui.components.OjolCard
 import com.ojolfund.app.ui.components.OjolTopBar
@@ -176,7 +177,7 @@ fun HomeScreen(
 
                 Spacer(Modifier.height(10.dp))
 
-                Text(
+                CountUpText(
                     "Rp125.000",
                     style = OjolText.Display.copy(fontSize = 38.sp),
                     color = OjolColors.Primary
@@ -500,7 +501,7 @@ private fun MiniStat(label: String, value: String, valueColor: Color, bg: Color,
             maxLines = 1
         )
         Spacer(Modifier.height(4.dp))
-        Text(
+        CountUpText(
             value,
             style = OjolText.TitleMd.copy(
                 fontWeight = FontWeight.Bold,
@@ -600,7 +601,7 @@ private fun StatCard(
         Spacer(Modifier.height(8.dp))
 
         Row(verticalAlignment = Alignment.Bottom) {
-            Text(
+            CountUpText(
                 value,
                 style = OjolText.HeadlineMd.copy(
                     fontWeight = FontWeight.Bold

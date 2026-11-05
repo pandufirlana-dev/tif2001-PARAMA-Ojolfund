@@ -1,14 +1,32 @@
 package com.ojolfund.app.ui
 
 import androidx.activity.compose.LocalActivity
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,6 +47,7 @@ import com.ojolfund.app.ui.screens.ProfileScreen
 import com.ojolfund.app.ui.screens.RegisterScreen
 import com.ojolfund.app.ui.screens.ReportScreen
 import com.ojolfund.app.ui.screens.ShiftScreen
+import com.ojolfund.app.ui.screens.SplashScreen
 import com.ojolfund.app.ui.screens.SummaryScreen
 import com.ojolfund.app.ui.screens.TargetScreen
 import com.ojolfund.app.ui.screens.TransactionsScreen
@@ -79,6 +98,34 @@ fun OjolFundApp() {
     val backStack by nav.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route
 
+    var showSplash by rememberSaveable { mutableStateOf(true) }
+
+    Box(Modifier.fillMaxSize()) {
+        AppScaffold(nav, authVm, otpVm, ledgerVm, planVm, communityVm, currentRoute)
+        AnimatedVisibility(visible = showSplash, exit = fadeOut(tween(SPLASH_FADE_MS))) {
+            SplashScreen(
+                onFinished = { showSplash = false },
+                // Menelan sentuhan agar layar di bawah splash tidak bisa ditekan.
+                modifier = Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {}
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppScaffold(
+    nav: NavHostController,
+    authVm: AuthViewModel,
+    otpVm: OtpAuthViewModel,
+    ledgerVm: LedgerViewModel,
+    planVm: PlanViewModel,
+    communityVm: CommunityViewModel,
+    currentRoute: String?
+) {
     Scaffold(
         containerColor = OjolColors.Canvas,
         bottomBar = {
@@ -92,7 +139,11 @@ fun OjolFundApp() {
             startDestination = Routes.WELCOME,
             modifier = Modifier
                 .padding(padding)
-                .background(OjolColors.Canvas)
+                .background(OjolColors.Canvas),
+            enterTransition = { screenEnter() },
+            exitTransition = { screenExit() },
+            popEnterTransition = { screenPopEnter() },
+            popExitTransition = { screenPopExit() }
         ) {
             composable(Routes.WELCOME) {
                 val activity = LocalActivity.current
@@ -242,6 +293,38 @@ fun OjolFundApp() {
             }
         }
     }
+}
+
+private const val SPLASH_FADE_MS = 450
+private const val SCREEN_MS = 300
+private const val TAB_MS = 200
+
+/** Perpindahan antar tab utama memakai fade saja; layar detail bergeser halus dari kanan. */
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.isTabSwitch(): Boolean =
+    initialState.destination.route in Routes.mainTabs && targetState.destination.route in Routes.mainTabs
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.screenEnter(): EnterTransition = if (isTabSwitch()) {
+    fadeIn(tween(TAB_MS))
+} else {
+    slideInHorizontally(tween(SCREEN_MS)) { it / 6 } + fadeIn(tween(SCREEN_MS))
+}
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.screenExit(): ExitTransition = if (isTabSwitch()) {
+    fadeOut(tween(TAB_MS))
+} else {
+    slideOutHorizontally(tween(SCREEN_MS)) { -it / 8 } + fadeOut(tween(SCREEN_MS))
+}
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.screenPopEnter(): EnterTransition = if (isTabSwitch()) {
+    fadeIn(tween(TAB_MS))
+} else {
+    slideInHorizontally(tween(SCREEN_MS)) { -it / 8 } + fadeIn(tween(SCREEN_MS))
+}
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.screenPopExit(): ExitTransition = if (isTabSwitch()) {
+    fadeOut(tween(TAB_MS))
+} else {
+    slideOutHorizontally(tween(SCREEN_MS)) { it / 6 } + fadeOut(tween(SCREEN_MS))
 }
 
 private fun NavHostController.navigateTab(route: String) {

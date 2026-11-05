@@ -45,7 +45,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,8 +63,11 @@ import androidx.compose.ui.unit.sp
 import com.ojolfund.app.ui.Routes
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private const val PROGRESS_FILL_MILLIS = 800
+private const val CONFIRM_MILLIS = 550L
 
 fun Context.toast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -174,12 +180,31 @@ fun PrimaryButton(
     color: Color = OjolColors.Primary,
     enabled: Boolean = true,
     height: Dp = 52.dp,
-    loading: Boolean = false
+    loading: Boolean = false,
+    confirmOnClick: Boolean = false
 ) {
     val source = remember { MutableInteractionSource() }
     val scale = rememberPressScale(source)
+    val haptic = rememberTapHaptic()
+    val scope = rememberCoroutineScope()
+    var confirmed by remember { mutableStateOf(false) }
     Button(
-        onClick = { if (!loading) onClick() },
+        onClick = {
+            if (!loading && !confirmed) {
+                haptic()
+                if (confirmOnClick) {
+                    // Tombol berubah jadi centang sejenak, baru aksi dijalankan.
+                    confirmed = true
+                    scope.launch {
+                        delay(CONFIRM_MILLIS)
+                        onClick()
+                        confirmed = false
+                    }
+                } else {
+                    onClick()
+                }
+            }
+        },
         enabled = enabled,
         interactionSource = source,
         modifier = modifier.fillMaxWidth().height(height).pressScale(scale),
@@ -192,7 +217,9 @@ fun PrimaryButton(
         ),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
     ) {
-        if (loading) {
+        if (confirmed) {
+            AnimatedCheckBadge(size = 28.dp, background = Color.White.copy(alpha = 0.25f))
+        } else if (loading) {
             CircularProgressIndicator(color = Color.White, strokeWidth = 2.dp, modifier = Modifier.size(22.dp))
         } else {
             if (leadingIcon != null) {
@@ -220,8 +247,12 @@ fun SoftButton(
 ) {
     val source = remember { MutableInteractionSource() }
     val scale = rememberPressScale(source)
+    val haptic = rememberTapHaptic()
     Button(
-        onClick = onClick,
+        onClick = {
+            haptic()
+            onClick()
+        },
         interactionSource = source,
         modifier = modifier.height(height).pressScale(scale),
         shape = RoundedCornerShape(12.dp),
@@ -341,7 +372,7 @@ fun AvatarCircle(modifier: Modifier = Modifier, size: Dp = 40.dp, onClick: () ->
 /** Top bar ala Beranda / Transaksi / Profil: logo + "OjolFund [Tersinkron]" + subjudul + lonceng + avatar. */
 @Composable
 fun OjolTopBar(subtitle: String, modifier: Modifier = Modifier, onBell: () -> Unit = {}, onAvatar: () -> Unit = {}) {
-    Surface(color = Color.White, shadowElevation = 2.dp, modifier = modifier) {
+    Surface(color = OjolColors.Card, shadowElevation = 2.dp, modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -379,7 +410,7 @@ fun OjolTopBar(subtitle: String, modifier: Modifier = Modifier, onBell: () -> Un
 /** Header sederhana ala Shift / Kendaraan: judul besar + "Tersinkron" + lonceng + avatar. */
 @Composable
 fun PageHeader(title: String, modifier: Modifier = Modifier, onBell: () -> Unit = {}, onAvatar: () -> Unit = {}) {
-    Surface(color = Color.White, shadowElevation = 2.dp, modifier = modifier) {
+    Surface(color = OjolColors.Card, shadowElevation = 2.dp, modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -411,7 +442,7 @@ fun PageHeader(title: String, modifier: Modifier = Modifier, onBell: () -> Unit 
 /** Top bar layar autentikasi: panah kembali + "OJOLFUND" + judul + avatar. */
 @Composable
 fun AuthTopBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(color = Color.White, shadowElevation = 2.dp, modifier = modifier) {
+    Surface(color = OjolColors.Card, shadowElevation = 2.dp, modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -454,14 +485,18 @@ private val navItems = listOf(
 
 @Composable
 fun OjolBottomBar(currentRoute: String?, onNavigate: (String) -> Unit) {
+    val haptic = rememberTapHaptic()
     Column {
         HorizontalDivider(color = OjolColors.Border)
-        NavigationBar(containerColor = Color.White, tonalElevation = 0.dp) {
+        NavigationBar(containerColor = OjolColors.Card, tonalElevation = 0.dp) {
             navItems.forEach { item ->
                 val selected = currentRoute == item.route
                 NavigationBarItem(
                     selected = selected,
-                    onClick = { onNavigate(item.route) },
+                    onClick = {
+                        if (!selected) haptic()
+                        onNavigate(item.route)
+                    },
                     icon = { Icon(item.icon, contentDescription = item.label) },
                     label = {
                         Text(

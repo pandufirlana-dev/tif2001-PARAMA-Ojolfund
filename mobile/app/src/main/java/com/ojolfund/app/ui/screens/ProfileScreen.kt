@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Flag
@@ -65,6 +66,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ojolfund.app.data.local.ThemeMode
+import com.ojolfund.app.ui.components.ChoiceChip
 import com.ojolfund.app.ui.components.IconBox
 import com.ojolfund.app.ui.components.OjolCard
 import com.ojolfund.app.ui.components.OjolTopBar
@@ -76,7 +79,11 @@ import com.ojolfund.app.ui.theme.OjolText
 import kotlinx.coroutines.delay
 
 @Composable
-fun ProfileScreen(onLogout: () -> Unit) {
+fun ProfileScreen(
+    onLogout: () -> Unit,
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
+    onThemeModeChange: (ThemeMode) -> Unit = {}
+) {
     val context = LocalContext.current
     var saveData by remember { mutableStateOf(true) }
     var syncing by remember { mutableStateOf(false) }
@@ -330,6 +337,34 @@ fun ProfileScreen(onLogout: () -> Unit) {
                 }
             }
 
+            // Tampilan (tema terang/gelap)
+            OjolCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), padding = 16.dp) {
+                SectionTitleRow(
+                    icon = Icons.Filled.DarkMode,
+                    title = "Tampilan",
+                    subtitle = "Pilih tema terang, gelap, atau ikuti sistem",
+                    badge = null
+                )
+                Spacer(Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ChoiceChip(
+                        text = "Sistem",
+                        selected = themeMode == ThemeMode.SYSTEM,
+                        onClick = { onThemeModeChange(ThemeMode.SYSTEM) }
+                    )
+                    ChoiceChip(
+                        text = "Terang",
+                        selected = themeMode == ThemeMode.LIGHT,
+                        onClick = { onThemeModeChange(ThemeMode.LIGHT) }
+                    )
+                    ChoiceChip(
+                        text = "Gelap",
+                        selected = themeMode == ThemeMode.DARK,
+                        onClick = { onThemeModeChange(ThemeMode.DARK) }
+                    )
+                }
+            }
+
             // Pencadangan & keamanan
             OjolCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), padding = 16.dp) {
                 SectionTitleRow(
@@ -493,7 +528,7 @@ fun ProfileScreen(onLogout: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFFE3F6EC))
+                        .background(OjolColors.Wash)
                         .clickable { context.toast("Membuka WhatsApp dukungan (demo)") }
                         .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -587,7 +622,7 @@ private fun PlatformChip(name: String, dot: Color, modifier: Modifier = Modifier
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
+            .background(OjolColors.Card)
             .padding(horizontal = 8.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -668,7 +703,7 @@ private fun OutlineAction(text: String, icon: ImageVector, modifier: Modifier = 
         modifier = modifier
             .height(48.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
+            .background(OjolColors.Card)
             .border(1.dp, OjolColors.Border, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.Center,
@@ -700,7 +735,7 @@ private fun CommissionRow(title: String, subtitle: String, percent: Int, dot: Co
             color = OjolColors.TextPrimary,
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color.White)
+                .background(OjolColors.Card)
                 .border(1.dp, OjolColors.Border, RoundedCornerShape(10.dp))
                 .clickable(onClick = onClick)
                 .padding(horizontal = 14.dp, vertical = 8.dp)

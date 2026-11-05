@@ -1,5 +1,7 @@
 package com.ojolfund.app.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,6 +47,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
+
+private const val FOCUS_MILLIS = 200
 
 /**
  * Kolom input bergaya OjoLFund: label di atas, kotak putih membulat, border merah + pesan saat galat.
@@ -70,17 +75,32 @@ fun OjolTextField(
     val focusManager = LocalFocusManager.current
     var passwordVisible by remember { mutableStateOf(false) }
     val hidden = isPassword && !passwordVisible
+    var focused by remember { mutableStateOf(false) }
+    val borderColor by animateColorAsState(
+        targetValue = when {
+            error != null -> OjolColors.ExpenseText
+            focused -> OjolColors.Primary
+            else -> Color.Transparent
+        },
+        animationSpec = tween(FOCUS_MILLIS),
+        label = "fieldBorder"
+    )
+    val labelColor by animateColorAsState(
+        targetValue = if (focused && error == null) OjolColors.Primary else OjolColors.TextPrimary,
+        animationSpec = tween(FOCUS_MILLIS),
+        label = "fieldLabel"
+    )
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(label, style = OjolText.LabelLg, color = OjolColors.TextPrimary)
+        Text(label, style = OjolText.LabelLg, color = labelColor)
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
-                .background(Color.White)
+                .background(OjolColors.Card)
                 .border(
-                    BorderStroke(1.5.dp, if (error != null) OjolColors.ExpenseText else Color.Transparent),
+                    BorderStroke(1.5.dp, borderColor),
                     RoundedCornerShape(14.dp)
                 )
                 .padding(horizontal = 14.dp, vertical = 14.dp),
@@ -122,6 +142,7 @@ fun OjolTextField(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .onFocusChanged { focused = it.isFocused }
                         .then(if (testTag != null) Modifier.testTag(testTag) else Modifier)
                 )
             }

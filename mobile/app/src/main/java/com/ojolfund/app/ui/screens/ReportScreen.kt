@@ -165,7 +165,7 @@ private fun PeriodTabs(selected: Int, onSelect: (Int) -> Unit) {
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(11.dp))
-                    .background(if (active) Color.White else Color.Transparent)
+                    .background(if (active) OjolColors.Card else Color.Transparent)
                     .clickable { onSelect(i) }
                     .padding(vertical = 10.dp)
                     .testTag("report_tab_$i"),

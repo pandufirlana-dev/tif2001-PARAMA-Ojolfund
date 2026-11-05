@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -384,7 +383,7 @@ fun FuelScreen(
             }
         }
 
-        Surface(color = Color.White, shadowElevation = 8.dp) {
+        Surface(color = OjolColors.Card, shadowElevation = 8.dp) {
             Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 PrimaryButton(
                     text = "Simpan Catatan BBM",
@@ -489,7 +488,7 @@ private fun EfficiencyCell(label: String, value: String, unit: String, modifier:
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
+            .background(OjolColors.Card)
             .padding(12.dp)
     ) {
         Text(label, style = OjolText.BodySm, color = OjolColors.TextVariant)
@@ -505,7 +504,7 @@ private fun EfficiencyCell(label: String, value: String, unit: String, modifier:
 @Composable
 private fun FuelSavedDialog(onClose: () -> Unit) {
     Dialog(onDismissRequest = onClose) {
-        Surface(shape = RoundedCornerShape(24.dp), color = Color.White) {
+        Surface(shape = RoundedCornerShape(24.dp), color = OjolColors.Card) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

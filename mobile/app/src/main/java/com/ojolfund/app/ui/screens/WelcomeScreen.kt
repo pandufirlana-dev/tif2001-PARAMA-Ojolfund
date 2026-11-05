@@ -1,5 +1,8 @@
 package com.ojolfund.app.ui.screens
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,9 +13,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +35,7 @@ import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -90,48 +97,76 @@ fun WelcomeScreen(onStart: () -> Unit, onLogin: () -> Unit, onSkip: () -> Unit, 
             HeroPreviewCard()
             BannerCard()
 
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    "Keuangan Ojol Lebih Terkontrol",
-                    style = OjolText.HeadlineLg.copy(fontSize = 26.sp, lineHeight = 32.sp),
-                    color = OjolColors.TextPrimary
-                )
-                Text(
-                    "Catat pemasukan dan pengeluaran, hitung untung bersih riil otomatis, dan pantau biaya bensin dalam satu aplikasi.",
-                    style = OjolText.BodyLg,
-                    color = OjolColors.TextVariant
-                )
-            }
-
-            FeatureRow(
-                Icons.Filled.Bolt,
-                "Kalkulasi Bersih Kilat",
-                "Komisi aplikator dipotong otomatis dari tarif kotor."
-            )
-            FeatureRow(
-                Icons.Filled.LocalGasStation,
-                "Pantau Bensin & Servis",
-                "Hitung km/liter & alokasi biaya perawatan berkala."
-            )
-            FeatureRow(
-                Icons.Filled.Warning,
-                "100% Siap Offline",
-                "Catat trip di jalan tanpa takut sinyal ponsel hilang.",
-                muted = true
-            )
-
-            // Indikator halaman
-            Row(
+            // Slide fitur yang bisa digeser, dengan indikator halaman beranimasi
+            val pagerState = rememberPagerState(pageCount = { ONBOARDING_PAGES })
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(Modifier.width(34.dp).height(8.dp).clip(CircleShape).background(OjolColors.Primary))
-                Spacer(Modifier.width(6.dp))
-                Box(Modifier.size(8.dp).clip(CircleShape).background(Color(0xFFBDC9C7)))
-                Spacer(Modifier.width(6.dp))
-                Box(Modifier.size(8.dp).clip(CircleShape).background(Color(0xFFBDC9C7)))
+                verticalAlignment = Alignment.Top
+            ) { page ->
+                Column(
+                    modifier = Modifier.fillMaxWidth().heightIn(min = ONBOARDING_HEIGHT.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    when (page) {
+                        0 -> {
+                            Text(
+                                "Keuangan Ojol Lebih Terkontrol",
+                                style = OjolText.HeadlineLg.copy(fontSize = 26.sp, lineHeight = 32.sp),
+                                color = OjolColors.TextPrimary
+                            )
+                            Text(
+                                "Catat pemasukan dan pengeluaran, hitung untung bersih riil otomatis, " +
+                                    "dan pantau biaya bensin dalam satu aplikasi.",
+                                style = OjolText.BodyLg,
+                                color = OjolColors.TextVariant
+                            )
+                            FeatureRow(
+                                Icons.Filled.Bolt,
+                                "Kalkulasi Bersih Kilat",
+                                "Komisi aplikator dipotong otomatis dari tarif kotor."
+                            )
+                        }
+                        1 -> {
+                            Text(
+                                "Semua Kebutuhan Driver",
+                                style = OjolText.HeadlineLg.copy(fontSize = 26.sp, lineHeight = 32.sp),
+                                color = OjolColors.TextPrimary
+                            )
+                            FeatureRow(
+                                Icons.Filled.LocalGasStation,
+                                "Pantau Bensin & Servis",
+                                "Hitung km/liter & alokasi biaya perawatan berkala."
+                            )
+                            FeatureRow(
+                                Icons.Filled.VerifiedUser,
+                                "Data Aman Terenkripsi",
+                                "Catatan keuanganmu hanya bisa dibuka oleh kamu."
+                            )
+                        }
+                        else -> {
+                            Text(
+                                "Tetap Jalan Tanpa Sinyal",
+                                style = OjolText.HeadlineLg.copy(fontSize = 26.sp, lineHeight = 32.sp),
+                                color = OjolColors.TextPrimary
+                            )
+                            FeatureRow(
+                                Icons.Filled.Warning,
+                                "100% Siap Offline",
+                                "Catat trip di jalan tanpa takut sinyal ponsel hilang.",
+                                muted = true
+                            )
+                            FeatureRow(
+                                Icons.Filled.Sync,
+                                "Tersinkron Otomatis",
+                                "Data aman di perangkat dan tersinkron saat sinyal kembali."
+                            )
+                        }
+                    }
+                }
             }
+
+            PagerDots(current = pagerState.currentPage, count = ONBOARDING_PAGES)
 
             PrimaryButton(
                 text = "Mulai Sekarang",
@@ -174,19 +209,44 @@ fun WelcomeScreen(onStart: () -> Unit, onLogin: () -> Unit, onSkip: () -> Unit, 
     }
 }
 
+/** Indikator halaman: titik aktif memanjang dan berubah warna dengan animasi. */
+@Composable
+private fun PagerDots(current: Int, count: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        repeat(count) { index ->
+            val selected = index == current
+            val width by animateDpAsState(if (selected) 34.dp else 8.dp, tween(DOT_MILLIS), label = "dotWidth")
+            val color by animateColorAsState(
+                if (selected) OjolColors.Primary else OjolColors.Inactive,
+                tween(DOT_MILLIS),
+                label = "dotColor"
+            )
+            Box(Modifier.width(width).height(8.dp).clip(CircleShape).background(color))
+        }
+    }
+}
+
+private const val ONBOARDING_PAGES = 3
+private const val ONBOARDING_HEIGHT = 196
+private const val DOT_MILLIS = 250
+
 @Composable
 private fun HeroPreviewCard() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
-            .background(Brush.verticalGradient(listOf(Color(0xFF9CF1E8), Color(0xFFE3FAF6))))
+            .background(Brush.verticalGradient(listOf(OjolColors.WashStrong, OjolColors.Wash)))
             .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Pill("Tersinkron Otomatis", bg = Color.White, fg = OjolColors.PrimaryDeep, icon = Icons.Filled.Sync)
-            Pill("Kebal Blank Spot", bg = Color.White, fg = OjolColors.PrimaryDeep, icon = Icons.Filled.WifiOff)
+            Pill("Tersinkron Otomatis", bg = OjolColors.Card, fg = OjolColors.PrimaryDeep, icon = Icons.Filled.Sync)
+            Pill("Kebal Blank Spot", bg = OjolColors.Card, fg = OjolColors.PrimaryDeep, icon = Icons.Filled.WifiOff)
         }
 
         OjolCard(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), padding = 16.dp) {
@@ -264,7 +324,7 @@ private fun PlatformMini(text: String, dot: Color, modifier: Modifier = Modifier
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(Color.White)
+            .background(OjolColors.Card)
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -321,7 +381,7 @@ private fun FeatureRow(
     ) {
         IconBox(
             icon,
-            bg = if (muted) OjolColors.GrayBox2 else Color(0xFF8FEFE4),
+            bg = if (muted) OjolColors.GrayBox2 else OjolColors.Aqua,
             tint = if (muted) OjolColors.PrimaryDeep else OjolColors.PrimaryDeep,
             size = 44.dp,
             radius = 12.dp

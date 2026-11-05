@@ -38,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -304,7 +303,7 @@ fun AddOrderScreen(
             }
         }
 
-        Surface(color = Color.White, shadowElevation = 8.dp) {
+        Surface(color = OjolColors.Card, shadowElevation = 8.dp) {
             Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 CheckRow(checked = addToShift, onCheckedChange = { addToShift = it }) {
                     Text(
@@ -325,6 +324,7 @@ fun AddOrderScreen(
                             context.toast("Order ${platform.label} tersimpan")
                         }
                     },
+                    confirmOnClick = gross > 0,
                     modifier = Modifier.testTag("order_save")
                 )
             }

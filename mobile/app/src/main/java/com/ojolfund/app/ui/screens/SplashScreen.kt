@@ -36,10 +36,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+// Splash selalu hijau (tidak mengikuti mode gelap) agar sama dengan splash sistem.
+private val SplashGreen = Color(0xFF087F78)
+private val SplashGreenDeep = Color(0xFF075B58)
 
 private const val RING_MILLIS = 2000
 private const val TITLE_DELAY = 350L
@@ -80,7 +83,7 @@ fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(OjolColors.Primary, OjolColors.PrimaryDeep))),
+            .background(Brush.verticalGradient(listOf(SplashGreen, SplashGreenDeep))),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
@@ -113,7 +116,7 @@ fun SplashScreen(onFinished: () -> Unit, modifier: Modifier = Modifier) {
                     Icon(
                         Icons.Filled.AccountBalanceWallet,
                         contentDescription = "OjolFund",
-                        tint = OjolColors.Primary,
+                        tint = SplashGreen,
                         modifier = Modifier.size(52.dp)
                     )
                 }

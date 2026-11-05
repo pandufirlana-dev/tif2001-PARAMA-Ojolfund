@@ -52,7 +52,7 @@ fun DetailHeader(
     subtitle: String? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
-    Surface(color = Color.White, shadowElevation = 2.dp, modifier = modifier) {
+    Surface(color = OjolColors.Card, shadowElevation = 2.dp, modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -98,7 +98,7 @@ fun ChoiceChip(
     modifier: Modifier = Modifier,
     dot: Boolean = false
 ) {
-    val bg = if (selected) OjolColors.Primary else Color.White
+    val bg = if (selected) OjolColors.Primary else OjolColors.Card
     val fg = if (selected) Color.White else OjolColors.TextPrimary
     Row(
         modifier = modifier
@@ -194,7 +194,7 @@ fun AmountDialog(
 ) {
     var amount by remember { mutableLongStateOf(0L) }
     Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = RoundedCornerShape(20.dp), color = Color.White) {
+        Surface(shape = RoundedCornerShape(20.dp), color = OjolColors.Card) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text(title, style = OjolText.TitleLg, color = OjolColors.TextPrimary)
                 if (hint != null) Text(hint, style = OjolText.BodyMd, color = OjolColors.TextVariant)
@@ -240,7 +240,7 @@ fun CheckRow(
             modifier = Modifier
                 .size(22.dp)
                 .clip(RoundedCornerShape(6.dp))
-                .background(if (checked) OjolColors.Primary else Color.White)
+                .background(if (checked) OjolColors.Primary else OjolColors.Card)
                 .border(
                     BorderStroke(1.5.dp, if (checked) OjolColors.Primary else OjolColors.TextSecondary),
                     RoundedCornerShape(6.dp)

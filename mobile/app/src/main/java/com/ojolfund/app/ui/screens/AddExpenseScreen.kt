@@ -82,7 +82,7 @@ fun AddExpenseScreen(onBack: () -> Unit, onSave: (amount: Long, category: Expens
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(OjolColors.Card)
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -149,7 +149,7 @@ fun AddExpenseScreen(onBack: () -> Unit, onSave: (amount: Long, category: Expens
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(20.dp))
-                    .background(Brush.linearGradient(listOf(Color.White, Color.White, Color(0xFFE6F8F5))))
+                    .background(Brush.linearGradient(listOf(OjolColors.Card, OjolColors.Card, OjolColors.Wash)))
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -369,7 +369,7 @@ fun AddExpenseScreen(onBack: () -> Unit, onSave: (amount: Long, category: Expens
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White)
+                    .background(OjolColors.Card)
                     .padding(horizontal = 14.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -412,7 +412,8 @@ fun AddExpenseScreen(onBack: () -> Unit, onSave: (amount: Long, category: Expens
                     }
                 },
                 leadingIcon = Icons.Filled.CheckCircle,
-                height = 56.dp
+                height = 56.dp,
+                confirmOnClick = amount > 0L
             )
             Spacer(Modifier.height(8.dp))
         }
@@ -429,7 +430,7 @@ private fun CategoryCard(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(if (selected) OjolColors.Aqua else Color.White)
+            .background(if (selected) OjolColors.Aqua else OjolColors.Card)
             .clickable(onClick = onClick)
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.ojolfund.app.data.CommunityReport
 import com.ojolfund.app.data.ReportCategory
+import com.ojolfund.app.ui.components.AnimatedEmptyState
 import com.ojolfund.app.ui.components.ChoiceChip
 import com.ojolfund.app.ui.components.DetailHeader
 import com.ojolfund.app.ui.components.OjolCard
@@ -146,11 +147,10 @@ fun CommunityScreen(vm: CommunityViewModel, onBack: () -> Unit, onOpenChat: () -
                 }
 
                 if (visible.isEmpty()) {
-                    Text(
-                        "Belum ada laporan untuk kategori ini.",
-                        style = OjolText.BodyMd,
-                        color = OjolColors.TextVariant,
-                        modifier = Modifier.fillMaxWidth().padding(24.dp)
+                    AnimatedEmptyState(
+                        icon = Icons.Filled.CheckCircle,
+                        title = "Belum ada laporan",
+                        subtitle = "Belum ada laporan untuk kategori ini. Jalanan sedang aman."
                     )
                 }
                 visible.forEachIndexed { index, report ->
@@ -219,7 +219,7 @@ private fun TabSwitch(onChat: () -> Unit) {
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(11.dp))
-                .background(Color.White)
+                .background(OjolColors.Card)
                 .padding(vertical = 10.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -402,7 +402,7 @@ private fun QuickReportDialog(onDismiss: () -> Unit, onSubmit: (ReportCategory, 
     var title by remember { mutableStateOf("") }
     var body by remember { mutableStateOf("") }
     Dialog(onDismissRequest = onDismiss) {
-        Surface(shape = RoundedCornerShape(20.dp), color = Color.White) {
+        Surface(shape = RoundedCornerShape(20.dp), color = OjolColors.Card) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("Lapor Cepat Jalan", style = OjolText.TitleLg, color = OjolColors.TextPrimary)
                 Text(

@@ -151,7 +151,7 @@ fun VehicleScreen(onAddFuel: () -> Unit, onProfile: () -> Unit) {
                     }
                     Pill(
                         "Update hari ini",
-                        bg = Color.White,
+                        bg = OjolColors.Card,
                         fg = OjolColors.PrimaryDeep,
                         dot = true,
                         modifier = Modifier.clickable {
@@ -231,7 +231,7 @@ fun VehicleScreen(onAddFuel: () -> Unit, onProfile: () -> Unit) {
                 ) {
                     IconBox(
                         Icons.Filled.LocalGasStation,
-                        bg = Color.White,
+                        bg = OjolColors.Card,
                         tint = OjolColors.PrimaryDeep,
                         size = 40.dp,
                         radius = 20.dp
@@ -381,7 +381,7 @@ fun VehicleScreen(onAddFuel: () -> Unit, onProfile: () -> Unit) {
 
                 ServiceCard(
                     icon = Icons.Filled.Opacity,
-                    iconBg = Color(0xFFFFDAD6),
+                    iconBg = OjolColors.ExpenseBg,
                     iconTint = OjolColors.ShiftRed,
                     title = "Oli Mesin (MPX2)",
                     subtitle = "Terakhir di 23.000 km",
@@ -393,7 +393,7 @@ fun VehicleScreen(onAddFuel: () -> Unit, onProfile: () -> Unit) {
                     progressColor = OjolColors.ShiftRed,
                     left = "Sisa 150 km lagi (Kritis)",
                     right = "Batas: 25.000 km",
-                    cardBg = Color(0xFFFFEFED),
+                    cardBg = OjolColors.ExpenseBg,
                     leftColor = OjolColors.ShiftRed
                 )
                 Spacer(Modifier.height(10.dp))
@@ -519,7 +519,7 @@ private fun FuelHistoryCard(title: String, subtitle: String, price: String, odo:
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(Color.White)
+            .background(OjolColors.Card)
             .padding(top = 2.dp)
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {

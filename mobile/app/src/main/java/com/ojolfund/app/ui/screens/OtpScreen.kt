@@ -111,7 +111,7 @@ fun OtpScreen(vm: OtpAuthViewModel, onBack: () -> Unit, onVerified: () -> Unit) 
             )
 
             // Chip nomor
-            Surface(shape = RoundedCornerShape(16.dp), color = Color.White, shadowElevation = 2.dp) {
+            Surface(shape = RoundedCornerShape(16.dp), color = OjolColors.Card, shadowElevation = 2.dp) {
                 Row(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -154,7 +154,7 @@ fun OtpScreen(vm: OtpAuthViewModel, onBack: () -> Unit, onVerified: () -> Unit) 
                             .weight(1f)
                             .height(64.dp)
                             .clip(RoundedCornerShape(16.dp))
-                            .background(if (char != null || active) Color.White else OjolColors.GrayBox),
+                            .background(if (char != null || active) OjolColors.Card else OjolColors.GrayBox),
                         contentAlignment = Alignment.Center
                     ) {
                         when {
@@ -325,7 +325,7 @@ fun OtpScreen(vm: OtpAuthViewModel, onBack: () -> Unit, onVerified: () -> Unit) 
 @Composable
 private fun KeyButton(
     modifier: Modifier = Modifier,
-    bg: Color = Color.White,
+    bg: Color = OjolColors.Card,
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {

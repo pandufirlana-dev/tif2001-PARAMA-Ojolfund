@@ -45,6 +45,7 @@ import com.ojolfund.app.ui.components.OjolCard
 import com.ojolfund.app.ui.components.OjolLogo
 import com.ojolfund.app.ui.components.Pill
 import com.ojolfund.app.ui.components.PrimaryButton
+import com.ojolfund.app.ui.components.PulsingDot
 import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
 
@@ -70,7 +71,7 @@ fun WelcomeScreen(onStart: () -> Unit, onLogin: () -> Unit, onSkip: () -> Unit, 
                         horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
                         Text("OjoLFund", style = OjolText.HeadlineMd, color = OjolColors.TextPrimary)
-                        Box(Modifier.size(7.dp).clip(CircleShape).background(OjolColors.Primary))
+                        PulsingDot(color = OjolColors.Primary, size = 7.dp)
                     }
                     Text("Buku Kas Mitra Driver", style = OjolText.BodyMd, color = OjolColors.TextVariant)
                 }

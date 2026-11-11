@@ -6,7 +6,7 @@ Dokumen ini menjelaskan pipeline otomasi GitHub Actions pada repositori ini.
 
 | Workflow | Berkas | Trigger | Job (nama status check) | Isi |
 |---|---|---|---|---|
-| Android Mobile CI | `.github/workflows/mobile-ci.yml` | `pull_request` ke `main`, `workflow_dispatch` | `Lint & Unit Test Kotlin` | JDK 17, `./gradlew lintDebug`, `./gradlew testDebugUnitTest`, unggah laporan |
+| Android Mobile CI | `.github/workflows/mobile-ci.yml` | `pull_request` ke `main`, `workflow_dispatch` | `Lint & Unit Test Kotlin` | JDK 17, `./gradlew lintDebug`, `./gradlew testDebugUnitTest`, `./gradlew assembleDebug`, unggah laporan dan APK |
 | Server CI | `.github/workflows/server-ci.yml` | `pull_request` ke `main`, `workflow_dispatch` | `Lint & Test Server` | Node.js 22, `npm ci`, `npm run lint`, `npm test --if-present` |
 | CI (placeholder) | `.github/workflows/ci.yml` | `push` dan `pull_request` ke `main` | `check` | Hanya `echo`; bukan pemeriksaan kualitas |
 | CD (placeholder) | `.github/workflows/cd.yml` | tag `v*.*.*` | `deploy` | Hanya `echo`; belum ada deployment nyata |
@@ -25,13 +25,14 @@ Dokumen ini menjelaskan pipeline otomasi GitHub Actions pada repositori ini.
 - Cache Gradle melalui `actions/setup-java` (`cache: gradle`).
 - Langkah `lintDebug` gagal jika Android Lint menemukan error (warning tidak menggagalkan).
 - Langkah `testDebugUnitTest` menjalankan unit test JVM lokal tanpa emulator.
-- Artifact: `lint-report` (HTML) dan `unit-test-report` (HTML hasil test), selalu diunggah (`if: always()`).
+- Langkah `assembleDebug` memverifikasi aplikasi dapat dikompilasi menjadi APK debug.
+- Artifact: `lint-report` dan `unit-test-report` (HTML, selalu diunggah dengan `if: always()`), serta `app-debug-apk` (berkas `app-debug.apk`, disimpan 14 hari, hanya jika build berhasil).
 
 ### Lint & Test Server (`server/`)
 - Runner: `ubuntu-latest`, direktori kerja `server/`.
 - Cache npm berdasarkan `server/package-lock.json`.
 - `npm run lint` menjalankan ESLint (konfigurasi di `server/`).
-- `npm test --if-present` baru bermakna setelah skrip `test` ditambahkan ke `server/package.json`.
+- `npm test --if-present` menjalankan Jest (27 tes unit pada `server/tests/unit/`).
 
 ## Aturan Status Check (Branch Protection)
 

@@ -48,25 +48,19 @@ Status: **Diotomasi** = sudah ada test yang berjalan di CI; **Belum diotomasi** 
 | Header tidak ditambahkan jika token kosong | N | Diotomasi |
 | Header Authorization yang sudah ada dipertahankan | B | Diotomasi |
 
-## D. Backend (`/api/v1/auth`) - target `server/tests/auth.test.js`
+## D. Backend - Jest (`server/tests/unit/`, 27 test)
 
-Skrip `test` belum ada di `server/package.json` (menunggu Mhs 2). Workflow `server-ci.yml` memakai `npm test --if-present`, jadi otomatis ikut berjalan begitu skrip ditambahkan.
+Dijalankan oleh `server-ci.yml` melalui `npm test`. Database dan JWT di-mock, sehingga tidak membutuhkan PostgreSQL.
 
-| ID | Endpoint | Input | Respons diharapkan | Jenis | Status |
-|---|---|---|---|---|---|
-| D01 | POST /register | data valid | 201, `user` tanpa password | P | Belum diotomasi |
-| D02 | POST /register | field wajib kosong | 400 | N | Belum diotomasi |
-| D03 | POST /register | email `abc` | 400 format email | N | Belum diotomasi |
-| D04 | POST /register | password 7 karakter | 400 | B | Belum diotomasi |
-| D05 | POST /register | password 8 karakter | 201 | B | Belum diotomasi |
-| D06 | POST /register | email sudah ada (DB `23505`) | 409 | N | Belum diotomasi |
-| D07 | POST /register | error DB lain | 500 | N | Belum diotomasi |
-| D08 | POST /login | kredensial benar | 200 + token JWT | P | Belum diotomasi |
-| D09 | POST /login | field kosong | 400 | N | Belum diotomasi |
-| D10 | POST /login | password salah / email tak terdaftar | 401 | N | Belum diotomasi |
-| D11 | GET /me | token valid | 200 | P | Belum diotomasi |
-| D12 | GET /me | tanpa header | 401 "Token tidak ditemukan" | N | Belum diotomasi |
-| D13 | GET /me | token rusak | 401 "Token tidak valid" | N | Belum diotomasi |
+| Berkas | Skenario | Jumlah | Status |
+|---|---|---|---|
+| `authController.test.js` (register) | field kosong 400; format email salah 400; password < 8 karakter 400; sukses 201 dengan password ter-hash; email duplikat (23505) 409; error DB 500 | 6 | Diotomasi |
+| `authController.test.js` (login) | field kosong 400; email tidak terdaftar 401; password salah 401 (pesan sama); sukses 200 dengan token tanpa field password; error DB 500 | 5 | Diotomasi |
+| `password.test.js` (bcrypt) | hash berbeda dari password asli; format bcrypt cost 10; salt acak; comparePassword benar dan salah; menolak input non-string | 6 | Diotomasi |
+| `token.test.js` (JWT) | format 3 bagian; payload id dan role; tanpa password; masa berlaku 24 jam; secret salah ditolak | 5 | Diotomasi |
+| `verifyToken.test.js` | tanpa header 401; tanpa prefix Bearer 401; token tidak valid 401; token kedaluwarsa 401; token valid memanggil next() | 5 | Diotomasi |
+
+Belum tercakup: pengujian integrasi endpoint ke database PostgreSQL sungguhan (rencana Sprint 2).
 
 ## Ringkasan
 
@@ -77,8 +71,9 @@ Skrip `test` belum ada di `server/package.json` (menunggu Mhs 2). Workflow `serv
 | C. AuthInterceptor | 4 |
 | Bawaan (`ExampleUnitTest`) | 1 |
 | **Total mobile (`testDebugUnitTest`)** | **31** |
-| D. Backend | 0 dari 13 skenario |
+| D. Backend (Jest) | 27 |
+| **Total keseluruhan** | **58** |
 
 ## Code Coverage
 
-Belum diukur. Perlu JaCoCo (mobile) dan Jest `--coverage` (server). Isi persentase setelah dikonfigurasi.
+Belum diukur. Perlu JaCoCo (mobile) dan `npm run test:coverage` (server, sudah tersedia). Isi persentase setelah dijalankan.

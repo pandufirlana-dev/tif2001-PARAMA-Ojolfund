@@ -40,6 +40,17 @@ jobs:
       - name: Run Local Unit Tests
         run: ./gradlew testDebugUnitTest --stacktrace
 
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: mobile/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload Lint Report
         if: always()
         uses: actions/upload-artifact@v4

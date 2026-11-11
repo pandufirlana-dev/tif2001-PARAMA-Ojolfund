@@ -1,69 +1,127 @@
-# API Specification: Modul Autentikasi (Ojolfund)
+# Spesifikasi API: Modul Autentikasi (Sprint 1)
 
-Base URL: `http://localhost:5000/api/v1`
+Base URL (development): `http://localhost:5000/api/v1`
 
-## POST /auth/register
+| Lingkungan                                         | Base URL                        |
+| -------------------------------------------------- | ------------------------------- |
+| Emulator Android                                   | `http://10.0.2.2:5000/api/v1/`  |
+| HP fisik via USB (`adb reverse tcp:5000 tcp:5000`) | `http://localhost:5000/api/v1/` |
 
-Request body:
+Semua request dan respons berformat JSON (`Content-Type: application/json`).
+
+## 1. Register
+
+`POST /auth/register`
+
+**Request body**
 
 ```json
-{ "name": "string", "email": "string", "password": "string (min 8 karakter)" }
+{
+  "name": "Tester",
+  "email": "tester@example.com",
+  "password": "Password123"
+}
 ```
 
-Response 201:
+| Field    | Tipe   | Wajib | Aturan                         |
+| -------- | ------ | ----- | ------------------------------ |
+| name     | string | Ya    | Tidak boleh kosong             |
+| email    | string | Ya    | Format email valid, harus unik |
+| password | string | Ya    | Minimal 8 karakter             |
+
+**Respons sukses: 201 Created**
 
 ```json
 {
   "message": "Registrasi berhasil",
   "user": {
     "id": "uuid",
-    "name": "...",
-    "email": "...",
+    "name": "Tester",
+    "email": "tester@example.com",
     "role": "user",
-    "created_at": "..."
+    "created_at": "2026-11-04T08:00:00.000Z"
   }
 }
 ```
 
-Response 400: `{ "message": "Format email tidak valid" }` (atau field kosong / password < 8)
-Response 409: `{ "message": "Email sudah terdaftar" }`
+**Respons galat**
 
-## POST /auth/login
+| Status | Kondisi                         | Body                                                     |
+| ------ | ------------------------------- | -------------------------------------------------------- |
+| 400    | Ada field kosong                | `{ "message": "Name, email, dan password wajib diisi" }` |
+| 400    | Format email tidak valid        | `{ "message": "Format email tidak valid" }`              |
+| 400    | Password kurang dari 8 karakter | `{ "message": "Password minimal 8 karakter" }`           |
+| 409    | Email sudah terdaftar           | `{ "message": "Email sudah terdaftar" }`                 |
+| 500    | Kesalahan server                | `{ "message": "Terjadi kesalahan pada server" }`         |
 
-Request body:
+## 2. Login
+
+`POST /auth/login`
+
+**Request body**
 
 ```json
-{ "email": "string", "password": "string" }
+{
+  "email": "tester@example.com",
+  "password": "Password123"
+}
 ```
 
-Response 200:
+**Respons sukses: 200 OK**
 
 ```json
 {
   "message": "Login berhasil",
-  "token": "jwt (berlaku 24 jam)",
-  "user": { "id": "...", "name": "...", "email": "...", "role": "user" }
+  "token": "<JWT>",
+  "user": {
+    "id": "uuid",
+    "name": "Tester",
+    "email": "tester@example.com",
+    "role": "user"
+  }
 }
 ```
 
-Response 400: `{ "message": "Email dan password wajib diisi" }`
-Response 401: `{ "message": "Email atau kata sandi salah" }`
+**Respons galat**
 
-## GET /auth/me
+| Status | Kondisi                                   | Body                                              |
+| ------ | ----------------------------------------- | ------------------------------------------------- |
+| 400    | Email atau password kosong                | `{ "message": "Email dan password wajib diisi" }` |
+| 401    | Email tidak terdaftar atau password salah | `{ "message": "Email atau kata sandi salah" }`    |
+| 500    | Kesalahan server                          | `{ "message": "Terjadi kesalahan pada server" }`  |
 
-Header: `Authorization: Bearer <token>`
-Response 200: `{ "message": "Token valid", "user": { "id": "...", "role": "..." } }`
-Response 401: `{ "message": "Token tidak ditemukan" }` atau `"Token tidak valid atau kedaluwarsa"`
+Pesan 401 sengaja dibuat sama untuk email tidak terdaftar dan password salah, agar tidak membocorkan email mana yang terdaftar.
 
-## HTTP Status Code Reference
+## 3. Health check
 
-| Code | Meaning                                           |
-| ---- | ------------------------------------------------- |
-| 200  | OK — request berhasil                             |
-| 201  | Created — data baru berhasil dibuat               |
-| 400  | Bad Request — permintaan tidak valid              |
-| 401  | Unauthorized — token tidak ada / tidak valid      |
-| 403  | Forbidden — tidak punya akses (role tidak sesuai) |
-| 404  | Not Found — data tidak ditemukan                  |
-| 422  | Unprocessable Entity — validasi input gagal       |
-| 500  | Internal Server Error — kesalahan di sisi server  |
+`GET /health`
+
+| Status | Body                                                |
+| ------ | --------------------------------------------------- |
+| 200    | `{ "status": "ok", "database": "connected" }`       |
+| 500    | `{ "status": "error", "database": "disconnected" }` |
+
+## 4. Token JWT
+
+- Algoritma bawaan `jsonwebtoken` (HS256), ditandatangani dengan `JWT_SECRET`.
+- Masa berlaku: **24 jam**.
+- Payload: `{ "id": "<uuid user>", "role": "<role>" }`.
+- Dikirim klien pada endpoint terproteksi lewat header:
+
+```
+Authorization: Bearer <token>
+```
+
+Respons middleware `verifyToken` (untuk endpoint terproteksi pada sprint berikutnya):
+
+| Status | Kondisi                                                       | Body                                     |
+| ------ | ------------------------------------------------------------- | ---------------------------------------- |
+| 401    | Header Authorization tidak ada atau tidak berawalan `Bearer ` | `{ "message": "Token tidak ditemukan" }` |
+| 401    | Token tidak valid atau kedaluwarsa                            | `{ "message": "Token tidak valid" }`     |
+
+## 5. Catatan untuk klien mobile
+
+- `baseUrl` Retrofit harus diakhiri `/`, dan path endpoint tidak diawali `/` (misalnya `auth/login`).
+- Nama field request dan respons harus sama persis dengan dokumen ini (huruf besar-kecil dihitung).
+- Simpan token di DataStore atau EncryptedSharedPreferences, bukan teks polos.
+- Pada development memakai `http`, Android butuh `usesCleartextTraffic` atau network security config.

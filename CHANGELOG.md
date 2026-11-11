@@ -8,7 +8,7 @@ Angka `#NN` adalah nomor Pull Request di GitHub.
 
 Rencana Sprint 2 ada di `docs/sprint1_review.md`.
 
-## [0.1.0] - 2026-11-05
+## [0.1.0] - 2026-11-11
 
 Rilis akhir Sprint 1 (Fondasi Sistem & Modul Autentikasi).
 
@@ -23,6 +23,7 @@ Rilis akhir Sprint 1 (Fondasi Sistem & Modul Autentikasi).
 - Splash screen, animasi transisi, pulsing dot, count-up, dan press scale (#36, #37)
 - Logo launcher OjolFund (#41)
 - Mode gelap dengan saklar tema, skeleton loading, haptic feedback, pull-to-refresh, dan onboarding pager (#42)
+- Dokumentasi UI mobile (`docs/mobile_ui.md`) (#45)
 
 **Server (Node.js, Express, PostgreSQL)**
 - Server Express, koneksi pool PostgreSQL, dan skema tabel `users` (#11, #22)

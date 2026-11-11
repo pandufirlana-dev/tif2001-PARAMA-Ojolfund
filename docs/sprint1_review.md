@@ -1,29 +1,29 @@
 # Sprint 1 Review: Audit Kontribusi, Velocity, dan Rencana Sprint 2
 
 Proyek: OjolFund (Android Kotlin + Node.js REST API) | Sprint 1: Fondasi Sistem & Modul Autentikasi
-Periode data: 16 September 2026 - 5 November 2026 (branch `main`, 88 commit)
+Periode data: 16 September 2026 - 11 November 2026 (branch `main`, 90 commit)
 
 > Data di bawah dihitung dari riwayat git (`git log main`). Angka pada GitHub Insights dapat sedikit berbeda karena Insights mengelompokkan per akun GitHub dan hanya menghitung commit pada branch default. Gunakan dokumen ini bersama tangkapan layar Insights.
 
 ## 1. Audit Kontribusi Individu
 
-Jumlah commit tidak termasuk commit merge (59 commit non-merge dan 29 commit merge: 27 dari PR dan 2 merge manual).
+Jumlah commit tidak termasuk commit merge (60 commit non-merge dan 30 commit merge: 28 dari PR dan 2 merge manual).
 
 | Anggota | Peran | Commit | Baris ditambah | Baris dihapus | Area utama |
 |---|---|---|---|---|---|
-| M. Rafi Alfa Rizqi | Mhs 1, Mobile | 29 | 16.211 | 1.753 | `mobile/` (UI Compose, ViewModel, jaringan, tes, animasi) |
+| M. Rafi Alfa Rizqi | Mhs 1, Mobile | 30 | 16.389 | 1.753 | `mobile/` (UI Compose, ViewModel, jaringan, tes, animasi), `docs/mobile_ui.md` |
 | Marhandhy Waringga Jaddi | Mhs 2, Backend | 10 | 8.548 | 1.225 | `server/` (API auth, JWT, skema DB, ESLint, Jest), `docs/` |
 | Pandu Firlana Putra | Mhs 3, QA/DevOps | 20 | 479 | 33 | `.github/` (template PR/issue, CI/CD, review checklist), `docs/`, `.gitignore` |
-| **Total** | | **59** | | | |
+| **Total** | | **60** | | | |
 
 Catatan membaca angka:
 - Jumlah baris tidak mencerminkan kualitas atau beban kerja. Berkas DevOps berupa YAML dan Markdown pendek, sedangkan commit mobile dan server memuat proyek awal Android, kode UI, dan `package-lock.json`.
-- Commit awal repositori (`Initial commit`) tercatat atas nama Mhs 1 dan dihitung dalam 29 commit tersebut.
+- Commit awal repositori (`Initial commit`) tercatat atas nama Mhs 1 dan dihitung dalam 30 commit tersebut.
 - Satu orang Mhs 2 muncul dengan tiga nama git (`marhandhy-dev`, `Marhandhy Waringga Jaddi`, `Handhy.up`) dan sudah digabung pada tabel.
 
 ## 2. Pull Request yang Di-merge
 
-Total **27 PR** di-merge ke `main`, ditambah 2 commit merge manual (penyelesaian konflik).
+Total **28 PR** di-merge ke `main`, ditambah 2 commit merge manual (penyelesaian konflik).
 
 | Periode merge | PR | Fokus |
 |---|---|---|
@@ -31,9 +31,9 @@ Total **27 PR** di-merge ke `main`, ditambah 2 commit merge manual (penyelesaian
 | 13 - 14 Okt (Pertemuan 6) | #17, #18, #19, #20, #21, #22 | Compose UI dan AuthViewModel (#20), API auth JWT (#22), template PR, review checklist, `.gitignore` (#21) |
 | 21 Okt (Pertemuan 7) | #23, #25, #27, #28 | Retrofit dan DataStore (#23), workflow `mobile-ci.yml` (#25), ESLint server (#27), perbaikan lint (#28) |
 | 2 - 4 Nov (Pertemuan 8) | #29, #31, #33, #35 | Layar baru (#29), unit test mobile (#31), pipeline test CI dan dokumentasi (#33), unit test server (#35) |
-| 5 Nov (Pertemuan 9) | #36, #37, #41, #42 | Animasi (#36, #37), logo (#41), dark mode dan polish UI (#42) |
+| 5 - 11 Nov (Pertemuan 9) | #36, #37, #41, #42, #45 | Animasi (#36, #37), logo (#41), dark mode dan polish UI (#42), dokumentasi UI mobile (#45) |
 
-Velocity Sprint 1 (PR di-merge per periode pertemuan): 6, 4, 4, 4 PR, atau 18 PR selama Pertemuan 6 - 9.
+Velocity Sprint 1 (PR di-merge per periode pertemuan): 6, 4, 4, 5 PR, atau 19 PR selama Pertemuan 6 - 9.
 Nomor yang tidak muncul pada tabel (misalnya #30, #32, #34) adalah issue atau PR yang tidak di-merge.
 
 ## 3. Verifikasi Build APK Debug

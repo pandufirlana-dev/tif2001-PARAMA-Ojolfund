@@ -6,6 +6,8 @@ import com.ojolfund.app.data.Platform
 import com.ojolfund.app.data.SampleData
 import com.ojolfund.app.data.TagKind
 import com.ojolfund.app.data.Transaction
+import com.ojolfund.app.data.TransactionDraft
+import com.ojolfund.app.data.categoryLabel
 import com.ojolfund.app.data.formatDecimal
 import com.ojolfund.app.data.formatRupiah
 import java.text.SimpleDateFormat
@@ -86,6 +88,50 @@ class LedgerViewModel : ViewModel() {
         )
         _transactions.update { listOf(tx) + it }
     }
+
+    /** Tambah transaksi dari form Catat Transaksi. Sementara di memori; sambungan ke API menyusul (Pertemuan 11). */
+    fun addTransaction(draft: TransactionDraft) {
+        val tx = Transaction(
+            id = nextId(),
+            tag = draft.category.categoryLabel,
+            tagKind = draft.category,
+            time = nowLabel(),
+            title = draft.title.ifBlank { draft.category.categoryLabel },
+            subtitle = draft.note.ifBlank { defaultNote(draft.isIncome) },
+            amount = signedAmount(draft),
+            method = draft.method,
+            group = SampleData.GROUP_TODAY
+        )
+        _transactions.update { listOf(tx) + it }
+    }
+
+    /** Ubah transaksi [id]; waktu dan hari catatnya tidak berubah. Id yang tidak ada diabaikan. */
+    fun updateTransaction(id: Int, draft: TransactionDraft) {
+        _transactions.update { list ->
+            list.map { tx ->
+                if (tx.id != id) {
+                    tx
+                } else {
+                    tx.copy(
+                        tag = if (draft.category == tx.tagKind) tx.tag else draft.category.categoryLabel,
+                        tagKind = draft.category,
+                        title = draft.title.ifBlank { draft.category.categoryLabel },
+                        subtitle = draft.note.ifBlank { defaultNote(draft.isIncome) },
+                        amount = signedAmount(draft),
+                        method = draft.method
+                    )
+                }
+            }
+        }
+    }
+
+    fun deleteTransaction(id: Int) {
+        _transactions.update { list -> list.filterNot { it.id == id } }
+    }
+
+    private fun signedAmount(draft: TransactionDraft): Long = if (draft.isIncome) draft.amount else -draft.amount
+
+    private fun defaultNote(isIncome: Boolean): String = if (isIncome) "Pendapatan manual" else "Operasional Motor"
 
     private fun nextId(): Int = (_transactions.value.maxOfOrNull { it.id } ?: 0) + 1
 

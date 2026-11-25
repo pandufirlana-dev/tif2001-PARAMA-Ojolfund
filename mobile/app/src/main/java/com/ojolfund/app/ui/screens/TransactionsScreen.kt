@@ -12,42 +12,57 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Receipt
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.LocalFocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ojolfund.app.data.SampleData
+import com.ojolfund.app.data.TagKind
 import com.ojolfund.app.data.Transaction
+import com.ojolfund.app.data.categoryLabel
 import com.ojolfund.app.data.formatRupiah
 import com.ojolfund.app.ui.components.AnimatedEmptyState
+import com.ojolfund.app.ui.components.ChoiceChip
+import com.ojolfund.app.ui.components.ErrorState
 import com.ojolfund.app.ui.components.OjolCard
 import com.ojolfund.app.ui.components.OjolRefreshBox
 import com.ojolfund.app.ui.components.OjolTopBar
@@ -62,17 +77,38 @@ import com.ojolfund.app.ui.theme.OjolColors
 import com.ojolfund.app.ui.theme.OjolText
 import com.ojolfund.app.viewmodel.LedgerViewModel
 
+/**
+ * Daftar transaksi dengan pencarian dan filter. Pada Pertemuan 10 penyaringan masih di sisi klien (data di memori);
+ * di Pertemuan 11 pencarian (debounce), kategori, dan halaman dikirim ke API sebagai query parameter.
+ * [errorMessage] diisi saat pemuatan dari server gagal; sementara selalu null karena data masih lokal.
+ */
 @Composable
-fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, onProfile: () -> Unit) {
+fun TransactionsScreen(
+    ledgerVm: LedgerViewModel,
+    onAddTransaction: () -> Unit,
+    onOpenTransaction: (Int) -> Unit,
+    onProfile: () -> Unit,
+    errorMessage: String? = null,
+    onRetry: () -> Unit = {}
+) {
     val context = LocalContext.current
     val loading = rememberSkeletonLoading("transactions")
     val all by ledgerVm.transactions.collectAsState()
     var filter by remember { mutableIntStateOf(0) } // 0 semua, 1 pendapatan, 2 pengeluaran
+    var category by remember { mutableStateOf<TagKind?>(null) }
+    var query by remember { mutableStateOf("") }
 
-    val shown = when (filter) {
-        1 -> all.filter { it.isIncome }
-        2 -> all.filter { !it.isIncome }
-        else -> all
+    val keyword = query.trim()
+    val shown = all.filter { tx ->
+        val typeMatches = when (filter) {
+            1 -> tx.isIncome
+            2 -> !tx.isIncome
+            else -> true
+        }
+        val categoryMatches = category == null || tx.tagKind == category
+        val queryMatches = keyword.isEmpty() ||
+            listOf(tx.tag, tx.title, tx.subtitle).any { it.contains(keyword, ignoreCase = true) }
+        typeMatches && categoryMatches && queryMatches
     }
     val grouped = shown.groupBy { it.group }
 
@@ -155,7 +191,7 @@ fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, 
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         RecapBox(
                             "Pemasukan",
-                            "+3.250....",
+                            "+3.250.000",
                             "18 trip",
                             OjolColors.Emerald,
                             OjolColors.GrayBox,
@@ -180,7 +216,10 @@ fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, 
                     }
                 }
 
-                // Chip filter
+                // Pencarian
+                SearchField(query = query, onQueryChange = { query = it })
+
+                // Chip filter jenis
                 Row(
                     modifier = Modifier.horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -190,25 +229,43 @@ fun TransactionsScreen(ledgerVm: LedgerViewModel, onAddTransaction: () -> Unit, 
                     FilterChipItem("Pengeluaran (6)", filter == 2) { filter = 2 }
                 }
 
-                // Daftar per hari
-                if (loading) {
+                // Chip filter kategori
+                Row(
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ChoiceChip("Semua kategori", selected = category == null, onClick = { category = null })
+                    categoryFilters.forEach { kind ->
+                        ChoiceChip(kind.categoryLabel, selected = category == kind, onClick = { category = kind })
+                    }
+                }
+
+                // Daftar per hari: memuat, galat, atau isi
+                // TODO(P11): muat halaman berikutnya saat daftar mendekati akhir (infinite scroll) dari metadata paginasi.
+                if (errorMessage != null) {
+                    ErrorState(message = errorMessage, onRetry = onRetry)
+                } else if (loading) {
                     repeat(5) { ShimmerBox(Modifier.fillMaxWidth().height(72.dp), RoundedCornerShape(16.dp)) }
                 } else {
                     grouped.forEach { (group, items) ->
                         GroupHeader(group)
                         items.forEachIndexed { index, tx ->
                             StaggerIn(index) {
-                                TransactionCard(tx, onClick = { context.toast("${tx.tag}: ${tx.title}") })
+                                TransactionCard(tx, onClick = { onOpenTransaction(tx.id) })
                             }
                         }
                     }
                 }
 
-                if (!loading && shown.isEmpty()) {
+                if (errorMessage == null && !loading && shown.isEmpty()) {
                     AnimatedEmptyState(
                         icon = Icons.Filled.Receipt,
                         title = "Belum ada transaksi",
-                        subtitle = "Tidak ada transaksi pada filter ini. Coba ganti filter atau catat transaksi baru."
+                        subtitle = if (keyword.isEmpty()) {
+                            "Tidak ada transaksi pada filter ini. Coba ganti filter atau catat transaksi baru."
+                        } else {
+                            "Tidak ada hasil untuk \"$keyword\". Coba kata kunci lain."
+                        }
                     )
                 }
 
@@ -306,6 +363,69 @@ private fun RecapBox(
             style = OjolText.LabelSm.copy(fontSize = 11.sp),
             color = if (caption.startsWith("↗")) OjolColors.PrimaryDeep else OjolColors.PrimaryDeep
         )
+    }
+}
+
+private val categoryFilters = listOf(
+    TagKind.GORIDE,
+    TagKind.GRAB,
+    TagKind.MAXIM,
+    TagKind.BBM,
+    TagKind.PARKIR,
+    TagKind.MAKAN,
+    TagKind.LAINNYA
+)
+
+/** Kolom cari: ikon kaca pembesar, tombol hapus teks saat terisi, dan tombol Cari di keyboard menutup keyboard. */
+@Composable
+private fun SearchField(query: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier) {
+    val focusManager = LocalFocusManager.current
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(OjolColors.GrayBox)
+            .padding(start = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Icon(
+            Icons.Filled.Search,
+            contentDescription = null,
+            tint = OjolColors.TextSecondary,
+            modifier = Modifier.size(20.dp)
+        )
+        Box(Modifier.weight(1f)) {
+            if (query.isEmpty()) {
+                Text("Cari transaksi", style = OjolText.BodyLg, color = OjolColors.TextSecondary)
+            }
+            BasicTextField(
+                value = query,
+                onValueChange = onQueryChange,
+                singleLine = true,
+                textStyle = OjolText.BodyLg.copy(color = OjolColors.TextPrimary),
+                cursorBrush = SolidColor(OjolColors.Primary),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        if (query.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable(role = Role.Button) { onQueryChange("") },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = "Hapus pencarian",
+                    tint = OjolColors.TextSecondary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
     }
 }
 

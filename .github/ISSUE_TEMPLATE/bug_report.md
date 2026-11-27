@@ -1,3 +1,10 @@
+---
+name: Bug report
+about: Laporkan bug atau perilaku yang tidak sesuai
+title: "[BUG] "
+labels: ""
+---
+
 ## Deskripsi Bug
 
 Jelaskan bug yang ditemukan.

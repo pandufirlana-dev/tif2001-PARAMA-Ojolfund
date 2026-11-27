@@ -1,3 +1,10 @@
+---
+name: Feature request
+about: Usulan fitur baru untuk OjolFund
+title: "[FEATURE] "
+labels: ""
+---
+
 ## Deskripsi Fitur
 
 Jelaskan fitur yang ingin ditambahkan.

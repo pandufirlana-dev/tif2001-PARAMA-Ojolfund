@@ -29,10 +29,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.ojolfund.app.data.local.ThemeMode
 import com.ojolfund.app.ui.components.OjolBottomBar
 import com.ojolfund.app.ui.screens.AddExpenseScreen
@@ -51,6 +53,8 @@ import com.ojolfund.app.ui.screens.ShiftScreen
 import com.ojolfund.app.ui.screens.SplashScreen
 import com.ojolfund.app.ui.screens.SummaryScreen
 import com.ojolfund.app.ui.screens.TargetScreen
+import com.ojolfund.app.ui.screens.TransactionDetailScreen
+import com.ojolfund.app.ui.screens.TransactionFormScreen
 import com.ojolfund.app.ui.screens.TransactionsScreen
 import com.ojolfund.app.ui.screens.VehicleScreen
 import com.ojolfund.app.ui.screens.WelcomeScreen
@@ -80,6 +84,13 @@ object Routes {
     const val TARGET = "target"
     const val COMMUNITY = "community"
     const val COMMUNITY_CHAT = "community_chat"
+    const val TRANSACTION_FORM = "transaction_form"
+    const val TRANSACTION_EDIT = "transaction_edit/{id}"
+    const val TRANSACTION_DETAIL = "transaction_detail/{id}"
+
+    fun transactionEdit(id: Int) = "transaction_edit/$id"
+
+    fun transactionDetail(id: Int) = "transaction_detail/$id"
 
     val mainTabs = setOf(HOME, TRANSACTIONS, SHIFT, VEHICLE, PROFILE)
 
@@ -220,8 +231,50 @@ private fun AppScaffold(
             composable(Routes.TRANSACTIONS) {
                 TransactionsScreen(
                     ledgerVm = ledgerVm,
-                    onAddTransaction = { nav.navigate(Routes.ADD_EXPENSE) },
+                    onAddTransaction = { nav.navigate(Routes.TRANSACTION_FORM) },
+                    onOpenTransaction = { id -> nav.navigate(Routes.transactionDetail(id)) },
                     onProfile = { nav.navigateTab(Routes.PROFILE) }
+                )
+            }
+            composable(Routes.TRANSACTION_FORM) {
+                TransactionFormScreen(
+                    initial = null,
+                    onBack = { nav.popBackStack() },
+                    onSave = { draft ->
+                        ledgerVm.addTransaction(draft)
+                        nav.popBackStack()
+                    }
+                )
+            }
+            composable(
+                route = Routes.TRANSACTION_DETAIL,
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { entry ->
+                val id = entry.arguments?.getInt("id") ?: -1
+                val all by ledgerVm.transactions.collectAsState()
+                TransactionDetailScreen(
+                    transaction = all.firstOrNull { it.id == id },
+                    onBack = { nav.popBackStack() },
+                    onEdit = { nav.navigate(Routes.transactionEdit(id)) },
+                    onDelete = {
+                        ledgerVm.deleteTransaction(id)
+                        nav.popBackStack()
+                    }
+                )
+            }
+            composable(
+                route = Routes.TRANSACTION_EDIT,
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { entry ->
+                val id = entry.arguments?.getInt("id") ?: -1
+                val all by ledgerVm.transactions.collectAsState()
+                TransactionFormScreen(
+                    initial = all.firstOrNull { it.id == id },
+                    onBack = { nav.popBackStack() },
+                    onSave = { draft ->
+                        ledgerVm.updateTransaction(id, draft)
+                        nav.popBackStack()
+                    }
                 )
             }
             composable(Routes.SHIFT) {
